@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
 import {
   FiArrowRight,
   FiCheckCircle,
@@ -274,12 +275,12 @@ function Home() {
                     <FiUsers size={14} /> {car.seats}
                   </span>
                 </div>
-                <button
-                  type="button"
-                  className="mt-auto rounded-lg border border-blue-100 bg-blue-50 px-4 py-2 text-xs font-semibold text-blue-700 transition hover:border-blue-200 hover:bg-blue-100"
+                <Link
+                  to={`/car-details/${car.id}`}
+                  className="mt-auto rounded-lg border border-blue-100 bg-blue-50 px-4 py-2 text-center text-xs font-semibold text-blue-700 transition hover:border-blue-200 hover:bg-blue-100"
                 >
                   View Details
-                </button>
+                </Link>
               </div>
             </motion.article>
           ))}

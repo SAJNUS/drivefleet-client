@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
 import {
   FiChevronDown,
   FiChevronLeft,
@@ -121,7 +122,7 @@ function ExploreCars() {
             alt="Explore cars"
             className="h-full w-full object-cover object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/80 to-white/30" />
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-50/90 via-blue-50/70 to-blue-50/20" />
         </div>
         <div className="relative grid gap-8 md:grid-cols-[1.2fr_0.8fr]">
           <div className="space-y-3">
@@ -243,7 +244,7 @@ function ExploreCars() {
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, amount: 0.2 }}
-            className="grid gap-6 md:grid-cols-2 xl:grid-cols-3"
+            className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3"
           >
             {cars.map((car) => (
               <motion.article
@@ -301,12 +302,12 @@ function ExploreCars() {
                     <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-600">
                       {car.status}
                     </span>
-                    <button
-                      type="button"
+                    <Link
+                      to={`/car-details/${car.id}`}
                       className="rounded-lg border border-blue-100 bg-blue-50 px-4 py-2 text-xs font-semibold text-blue-700"
                     >
                       View Details
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </motion.article>
