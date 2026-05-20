@@ -244,7 +244,7 @@ function Home() {
             >
               <div className="relative bg-gradient-to-b from-slate-50 to-white">
                 <span
-                  className={`absolute left-4 top-4 rounded-md px-3 py-1 text-[11px] font-semibold uppercase tracking-wide shadow ${
+                  className={`absolute left-4 top-4 rounded-md px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide shadow opacity-90 ${
                     carTagStyles[car.type] || 'bg-slate-600 text-white'
                   }`}
                 >
