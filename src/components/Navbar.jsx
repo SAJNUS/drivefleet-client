@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, Link } from 'react-router-dom'
 
 const navLinks = [
   { label: 'Home', to: '/' },
@@ -11,14 +11,14 @@ function Navbar() {
   return (
     <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/80 shadow-sm backdrop-blur">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-        <div>
+        <Link to="/" className="flex flex-col">
           <p className="text-xl font-semibold text-slate-900">
             Drive<span className="text-blue-600">Fleet</span>
           </p>
           <p className="text-xs uppercase tracking-wider text-slate-500">
             Car Rental
           </p>
-        </div>
+        </Link>
 
         <nav className="hidden items-center gap-8 text-sm font-semibold text-slate-600 md:flex">
           {navLinks.map((link) => (
