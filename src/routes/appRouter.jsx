@@ -8,6 +8,7 @@ import CarDetails from '../pages/CarDetails.jsx'
 import AddCar from '../pages/AddCar.jsx'
 import MyBookings from '../pages/MyBookings.jsx'
 import MyAddedCars from '../pages/MyAddedCars.jsx'
+import UpdateCar from '../pages/UpdateCar.jsx'
 import Login from '../pages/Login.jsx'
 import Register from '../pages/Register.jsx'
 import NotFound from '../pages/NotFound.jsx'
@@ -32,6 +33,7 @@ const appRouter = createBrowserRouter([
         element: <PrivateLayout />,
         children: [
           { path: 'add-car', element: <AddCar /> },
+          { path: 'update-car/:id', element: <UpdateCar /> },
           { path: 'my-bookings', element: <MyBookings /> },
           { path: 'my-added-cars', element: <MyAddedCars /> },
         ],
