@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion'
-import { Link } from 'react-router-dom'
 import {
   FiArrowRight,
   FiCheckCircle,
@@ -9,71 +8,10 @@ import {
   FiStar,
   FiUsers,
 } from 'react-icons/fi'
+import CarCard from '../components/CarCard.jsx'
+import { carCatalog } from '../data/cars.js'
 
 const heroImage = '/banner-section-picture.png'
-
-const cars = [
-  {
-    id: 1,
-    name: 'BMW X5',
-    type: 'SUV',
-    price: '$85',
-    seats: '5 Seats',
-    location: 'Dhaka, Bangladesh',
-    image:
-      'https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&w=900&q=80',
-  },
-  {
-    id: 2,
-    name: 'Audi A4',
-    type: 'Sedan',
-    price: '$65',
-    seats: '5 Seats',
-    location: 'Chattogram, Bangladesh',
-    image:
-      'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=900&q=80',
-  },
-  {
-    id: 3,
-    name: 'Volkswagen Golf',
-    type: 'Hatchback',
-    price: '$45',
-    seats: '4 Seats',
-    location: 'Sylhet, Bangladesh',
-    image:
-      'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=900&q=80',
-  },
-  {
-    id: 4,
-    name: 'Mercedes C-Class',
-    type: 'Luxury',
-    price: '$95',
-    seats: '5 Seats',
-    location: 'Dhaka, Bangladesh',
-    image:
-      'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?auto=format&fit=crop&w=900&q=80',
-  },
-  {
-    id: 5,
-    name: 'Toyota Camry',
-    type: 'Sedan',
-    price: '$55',
-    seats: '5 Seats',
-    location: 'Khulna, Bangladesh',
-    image:
-      'https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=900&q=80',
-  },
-  {
-    id: 6,
-    name: 'Range Rover Evoque',
-    type: 'SUV',
-    price: '$90',
-    seats: '5 Seats',
-    location: 'Rajshahi, Bangladesh',
-    image:
-      'https://images.unsplash.com/photo-1489824904134-891ab64532f1?auto=format&fit=crop&w=900&q=80',
-  },
-]
 
 const highlights = [
   {
@@ -142,6 +80,8 @@ const staggerContainer = {
 }
 
 function Home() {
+  const featuredCars = carCatalog.slice(0, 6)
+
   return (
     <div className="space-y-24">
       <motion.section
@@ -235,53 +175,15 @@ function Home() {
           viewport={{ once: true, amount: 0.2 }}
           className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
         >
-          {cars.map((car) => (
+          {featuredCars.map((car) => (
             <motion.article
               key={car.id}
               variants={sectionVariant}
               whileHover={{ y: -6 }}
               transition={{ duration: 0.2 }}
-              className="flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-[0_18px_40px_-30px_rgba(15,23,42,0.6)]"
+              className=""
             >
-              <div className="relative bg-gradient-to-b from-slate-50 to-white">
-                <span
-                  className={`absolute left-4 top-4 rounded-md px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide shadow opacity-90 ${
-                    carTagStyles[car.type] || 'bg-slate-600 text-white'
-                  }`}
-                >
-                  {car.type}
-                </span>
-                <img
-                  src={car.image}
-                  alt={car.name}
-                  className="h-48 w-full object-cover"
-                />
-              </div>
-              <div className="flex flex-1 flex-col gap-4 p-5">
-                <div>
-                  <h3 className="text-lg font-semibold text-slate-900">
-                    {car.name}
-                  </h3>
-                  <p className="text-xs text-slate-500">{car.location}</p>
-                </div>
-                <div className="flex items-center justify-between text-sm text-slate-600">
-                  <span className="text-lg font-semibold text-blue-600">
-                    {car.price}
-                    <span className="text-xs font-medium text-slate-500">
-                      /day
-                    </span>
-                  </span>
-                  <span className="flex items-center gap-1 text-xs">
-                    <FiUsers size={14} /> {car.seats}
-                  </span>
-                </div>
-                <Link
-                  to={`/car-details/${car.id}`}
-                  className="mt-auto rounded-lg border border-blue-100 bg-blue-50 px-4 py-2 text-center text-xs font-semibold text-blue-700 transition hover:border-blue-200 hover:bg-blue-100"
-                >
-                  View Details
-                </Link>
-              </div>
+              <CarCard car={car} variant="home" />
             </motion.article>
           ))}
         </motion.div>

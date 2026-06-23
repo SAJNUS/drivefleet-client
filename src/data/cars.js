@@ -1,0 +1,148 @@
+export const carCatalog = [
+  {
+    id: 1,
+    name: 'BMW X5',
+    type: 'SUV',
+    dailyRentPrice: 120,
+    seats: '5 Seats',
+    location: 'Dhaka',
+    rating: 4.8,
+    status: 'Available',
+    image:
+      'https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&w=900&q=80',
+  },
+  {
+    id: 2,
+    name: 'Toyota Camry',
+    type: 'Sedan',
+    dailyRentPrice: 60,
+    seats: '5 Seats',
+    location: 'Chattogram',
+    rating: 4.6,
+    status: 'Available',
+    image:
+      'https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=900&q=80',
+  },
+  {
+    id: 3,
+    name: 'Suzuki Swift',
+    type: 'Hatchback',
+    dailyRentPrice: 30,
+    seats: '4 Seats',
+    location: 'Sylhet',
+    rating: 4.5,
+    status: 'Available',
+    image:
+      'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=900&q=80',
+  },
+  {
+    id: 4,
+    name: 'Mercedes-Benz E-Class',
+    type: 'Luxury',
+    dailyRentPrice: 150,
+    seats: '5 Seats',
+    location: 'Dhaka',
+    rating: 4.9,
+    status: 'Available',
+    image:
+      'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?auto=format&fit=crop&w=900&q=80',
+  },
+  {
+    id: 5,
+    name: 'Hyundai Tucson',
+    type: 'SUV',
+    dailyRentPrice: 65,
+    seats: '5 Seats',
+    location: 'Khulna',
+    rating: 4.6,
+    status: 'Available',
+    image:
+      'https://images.unsplash.com/photo-1493238792000-8113da705763?auto=format&fit=crop&w=900&q=80',
+  },
+  {
+    id: 6,
+    name: 'Honda Civic',
+    type: 'Sedan',
+    dailyRentPrice: 45,
+    seats: '5 Seats',
+    location: 'Rajshahi',
+    rating: 4.4,
+    status: 'Available',
+    image:
+      'https://images.unsplash.com/photo-1549924231-f129b911e442?auto=format&fit=crop&w=900&q=80',
+  },
+  {
+    id: 7,
+    name: 'Audi Q7',
+    type: 'SUV',
+    dailyRentPrice: 110,
+    seats: '5 Seats',
+    location: 'Dhaka',
+    rating: 4.7,
+    status: 'Available',
+    image:
+      'https://images.unsplash.com/photo-1542362567-b07e54358753?auto=format&fit=crop&w=900&q=80',
+  },
+  {
+    id: 8,
+    name: 'Nissan Altima',
+    type: 'Sedan',
+    dailyRentPrice: 70,
+    seats: '5 Seats',
+    location: 'Barishal',
+    rating: 4.5,
+    status: 'Available',
+    image:
+      'https://images.unsplash.com/photo-1489824904134-891ab64532f1?auto=format&fit=crop&w=900&q=80',
+  },
+  {
+    id: 9,
+    name: 'Volkswagen Golf',
+    type: 'Hatchback',
+    dailyRentPrice: 50,
+    seats: '4 Seats',
+    location: 'Chattogram',
+    rating: 4.3,
+    status: 'Available',
+    image:
+      'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=900&q=80',
+  },
+  {
+    id: 10,
+    name: 'Range Rover Evoque',
+    type: 'Luxury',
+    dailyRentPrice: 140,
+    seats: '5 Seats',
+    location: 'Khulna',
+    rating: 4.8,
+    status: 'Available',
+    image:
+      'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=900&q=80',
+  },
+  {
+    id: 11,
+    name: 'Mazda CX-5',
+    type: 'SUV',
+    dailyRentPrice: 90,
+    seats: '5 Seats',
+    location: 'Sylhet',
+    rating: 4.7,
+    status: 'Available',
+    image:
+      'https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&w=900&q=80',
+  },
+  {
+    id: 12,
+    name: 'Audi A4',
+    type: 'Sedan',
+    dailyRentPrice: 80,
+    seats: '5 Seats',
+    location: 'Dhaka',
+    rating: 4.6,
+    status: 'Available',
+    image:
+      'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=900&q=80',
+  },
+]
+
+export const exploreCarTypes = ['All Types', 'SUV', 'Sedan', 'Hatchback', 'Luxury']
