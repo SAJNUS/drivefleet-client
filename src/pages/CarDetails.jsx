@@ -1,4 +1,6 @@
 import { motion } from 'framer-motion'
+import { useMemo } from 'react'
+import { useParams } from 'react-router-dom'
 import {
   FiCalendar,
   FiCheckCircle,
@@ -10,6 +12,7 @@ import {
   FiTool,
   FiUsers,
 } from 'react-icons/fi'
+import { carCatalog } from '../data/cars.js'
 
 const galleryImages = [
   '/banner-section-picture.png',
@@ -80,6 +83,29 @@ const sectionVariant = {
 }
 
 function CarDetails() {
+  const { id } = useParams()
+
+  const selectedCar = useMemo(
+    () => carCatalog.find((car) => String(car.id) === String(id)),
+    [id],
+  )
+
+  if (!selectedCar) {
+    return (
+      <div className="rounded-3xl border border-slate-200/70 bg-white p-8 text-center shadow-xl">
+        <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">
+          Car not found
+        </p>
+        <h1 className="mt-3 text-2xl font-semibold text-slate-900">
+          The selected car does not exist
+        </h1>
+        <p className="mt-2 text-sm text-slate-600">
+          Please go back to Explore Cars and choose a valid listing.
+        </p>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-10">
       <motion.section
@@ -91,12 +117,12 @@ function CarDetails() {
         <div className="space-y-6">
           <div className="relative overflow-hidden rounded-3xl border border-slate-200/70 bg-white shadow-xl">
             <img
-              src={galleryImages[0]}
-              alt="BMW X5 2023"
+              src={selectedCar.image}
+              alt={selectedCar.name}
               className="h-[320px] w-full object-cover md:h-[380px]"
             />
             <div className="absolute left-4 top-4 rounded-full bg-blue-600 px-3 py-1 text-xs font-semibold text-white">
-              SUV
+              {selectedCar.type}
             </div>
             <button
               type="button"
@@ -140,40 +166,40 @@ function CarDetails() {
             <div className="flex items-center justify-between">
               <div>
                 <span className="rounded-full bg-blue-600 px-3 py-1 text-xs font-semibold text-white">
-                  SUV
+                  {selectedCar.type}
                 </span>
                 <h1 className="mt-3 text-2xl font-semibold text-slate-900">
-                  BMW X5 2023
+                  {selectedCar.name}
                 </h1>
               </div>
               <div className="text-right">
                 <p className="text-xl font-semibold text-blue-600">
-                  $120
+                  ${selectedCar.dailyRentPrice}
                   <span className="text-xs font-medium text-slate-500">
                     /day
                   </span>
                 </p>
-                <p className="text-xs text-slate-500">12 Bookings</p>
+                <p className="text-xs text-slate-500">{selectedCar.status}</p>
               </div>
             </div>
 
             <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-slate-500">
               <span className="flex items-center gap-1">
-                <FiStar className="text-amber-500" size={14} /> 4.8 (56
-                reviews)
+                <FiStar className="text-amber-500" size={14} />{' '}
+                {selectedCar.rating} (56 reviews)
               </span>
               <span className="flex items-center gap-1">
-                <FiMapPin size={14} /> Dhaka, Bangladesh
+                <FiMapPin size={14} /> {selectedCar.location}, Bangladesh
               </span>
               <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-600">
-                Available
+                {selectedCar.status}
               </span>
             </div>
 
             <p className="mt-4 text-sm text-slate-600">
-              The BMW X5 combines luxury, performance, and versatility. Perfect
-              for city drives or long road trips with premium comfort and
-              powerful performance.
+              The {selectedCar.name} combines comfort, style, and versatility.
+              Perfect for city drives or long road trips with premium comfort
+              and reliable performance.
             </p>
 
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
@@ -185,7 +211,7 @@ function CarDetails() {
                   <div>
                     <p className="text-xs text-slate-500">{spec.label}</p>
                     <p className="text-sm font-semibold text-slate-900">
-                      {spec.value}
+                      {spec.label === 'Seats' ? selectedCar.seats : spec.value}
                     </p>
                   </div>
                 </div>
@@ -198,7 +224,7 @@ function CarDetails() {
               Book This Car
             </h2>
             <p className="mt-2 text-xl font-semibold text-blue-600">
-              $120
+              ${selectedCar.dailyRentPrice}
               <span className="text-xs font-medium text-slate-500">/day</span>
             </p>
             <div className="mt-4 space-y-4 text-sm text-slate-600">
