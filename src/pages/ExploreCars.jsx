@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react'
-import { motion } from 'framer-motion'
 import {
   FiChevronDown,
   FiChevronLeft,
@@ -13,18 +12,9 @@ import {
 import CarCard from '../components/CarCard.jsx'
 
 const apiUrl = 'http://localhost:5050/cars'
+const placeholderImageUrl = 'https://placehold.co/600x400?text=Car'
 
 const bannerImage = '/banner-section-picture.png'
-
-const sectionVariant = {
-  hidden: { opacity: 0, y: 24 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6 } },
-}
-
-const staggerContainer = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.08 } },
-}
 
 function ExploreCars() {
   const itemsPerPage = 6
@@ -68,18 +58,34 @@ function ExploreCars() {
     return () => controller.abort()
   }, [])
 
+  const transformedCars = useMemo(
+    () =>
+      cars.map((car) => ({
+        id: car._id,
+        name: `${car.make ?? ''} ${car.model ?? ''}`.trim(),
+        type: 'General',
+        image: placeholderImageUrl,
+        location: 'Unknown Location',
+        dailyRentPrice: 0,
+        seats: 'N/A',
+        rating: 0,
+        status: 'Available',
+      })),
+    [cars],
+  )
+
   const exploreCarTypes = useMemo(() => {
     const uniqueTypes = Array.from(
-      new Set(cars.map((car) => car.type).filter(Boolean)),
+      new Set(transformedCars.map((car) => car.type).filter(Boolean)),
     )
 
     return ['All Types', ...uniqueTypes]
-  }, [cars])
+  }, [transformedCars])
 
   const filteredCars = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLowerCase()
 
-    let result = cars.filter((car) => {
+    let result = transformedCars.filter((car) => {
       const matchesSearch = normalizedSearch
         ? car.name.toLowerCase().includes(normalizedSearch)
         : true
@@ -98,7 +104,7 @@ function ExploreCars() {
     })
 
     return result
-  }, [cars, searchTerm, selectedTypes, sortOrder])
+  }, [transformedCars, searchTerm, selectedTypes, sortOrder])
 
   const totalPages = Math.max(1, Math.ceil(filteredCars.length / itemsPerPage))
 
@@ -176,10 +182,7 @@ function ExploreCars() {
 
   return (
     <div className="space-y-10">
-      <motion.section
-        variants={sectionVariant}
-        initial="hidden"
-        animate="show"
+      <div
         className="relative overflow-hidden rounded-3xl border border-slate-200/70 bg-linear-to-r from-blue-50 via-white to-slate-50 px-6 py-10 shadow-xl md:px-10"
       >
         <div className="absolute inset-0">
@@ -202,14 +205,10 @@ function ExploreCars() {
           </div>
           <div className="hidden md:block" />
         </div>
-      </motion.section>
+      </div>
 
       <div className="grid gap-8 lg:grid-cols-[280px_1fr]">
-        <motion.aside
-          variants={sectionVariant}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.2 }}
+        <aside
           className="space-y-6 rounded-2xl border border-slate-200/70 bg-white p-5 shadow-[0_18px_40px_-32px_rgba(15,23,42,0.5)]"
         >
           <div className="space-y-2">
@@ -256,7 +255,7 @@ function ExploreCars() {
               Clear Filters
             </button>
           </div>
-        </motion.aside>
+        </aside>
 
         <div className="space-y-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
@@ -287,25 +286,15 @@ function ExploreCars() {
             </div>
           </div>
 
-          <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, amount: 0.2 }}
+          <div
             className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3"
           >
             {paginatedCars.map((car) => (
-              <motion.div
-                key={car.id}
-                variants={sectionVariant}
-                whileHover={{ y: -6 }}
-                transition={{ duration: 0.2 }}
-                className=""
-              >
+              <div key={car.id}>
                 <CarCard car={car} variant="explore" />
-              </motion.div>
+              </div>
             ))}
-          </motion.div>
+          </div>
 
           {filteredCars.length === 0 && (
             <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-600">
