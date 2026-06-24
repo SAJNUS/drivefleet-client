@@ -16,12 +16,6 @@ import {
 const apiBaseUrl = 'http://localhost:5050/cars'
 const placeholderImageUrl = 'https://placehold.co/1200x800?text=Car+Details'
 
-const staticSpecs = [
-  { label: 'Transmission', value: 'Automatic', icon: FiTool },
-  { label: 'Fuel Type', value: 'Petrol', icon: FiCheckCircle },
-  { label: 'Mileage', value: '10.5 km/l', icon: FiClock },
-  { label: 'Model Year', value: '2023', icon: FiCalendar },
-]
 
 const features = [
   'Dual Zone Climate Control',
@@ -122,6 +116,10 @@ function CarDetails() {
           rating: car.rating ?? 0,
           status: car.availabilityStatus ?? 'Available',
           description: car.description ?? '',
+          transmission: car.transmission ?? null,
+          fuelType: car.fuelType ?? null,
+          mileage: car.mileage ?? null,
+          modelYear: car.modelYear ?? null,
         })
       } catch (fetchError) {
         if (fetchError.name !== 'AbortError') {
@@ -287,7 +285,7 @@ function CarDetails() {
             </p>
 
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
-              {/* Seats — real MongoDB value */}
+              {/* Seats — real DB value */}
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
                   <FiUsers size={16} />
@@ -299,18 +297,54 @@ function CarDetails() {
                   </p>
                 </div>
               </div>
-              {/* Static specs */}
-              {staticSpecs.map((spec) => (
-                <div key={spec.label} className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-                    <spec.icon size={16} />
-                  </div>
-                  <div>
-                    <p className="text-xs text-slate-500">{spec.label}</p>
-                    <p className="text-sm font-semibold text-slate-900">{spec.value}</p>
-                  </div>
+              {/* Transmission — real DB value */}
+              <div className="flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                  <FiTool size={16} />
                 </div>
-              ))}
+                <div>
+                  <p className="text-xs text-slate-500">Transmission</p>
+                  <p className="text-sm font-semibold text-slate-900">
+                    {selectedCar.transmission ?? 'N/A'}
+                  </p>
+                </div>
+              </div>
+              {/* Fuel Type — real DB value */}
+              <div className="flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                  <FiCheckCircle size={16} />
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500">Fuel Type</p>
+                  <p className="text-sm font-semibold text-slate-900">
+                    {selectedCar.fuelType ?? 'N/A'}
+                  </p>
+                </div>
+              </div>
+              {/* Mileage — real DB value */}
+              <div className="flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                  <FiClock size={16} />
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500">Mileage</p>
+                  <p className="text-sm font-semibold text-slate-900">
+                    {selectedCar.mileage ?? 'N/A'}
+                  </p>
+                </div>
+              </div>
+              {/* Model Year — real DB value */}
+              <div className="flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                  <FiCalendar size={16} />
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500">Model Year</p>
+                  <p className="text-sm font-semibold text-slate-900">
+                    {selectedCar.modelYear ?? 'N/A'}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 

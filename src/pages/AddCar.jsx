@@ -9,11 +9,17 @@ const initialFormData = {
   imageUrl: '',
   seatCapacity: '',
   pickupLocation: '',
+  modelYear: '',
+  transmission: '',
+  fuelType: '',
+  mileage: '',
   description: '',
   availabilityStatus: 'Available',
 }
 
 const carTypes = ['SUV', 'Sedan', 'Hatchback', 'Luxury', 'Pickup', 'Electric']
+const transmissionOptions = ['Automatic', 'Manual', 'CVT']
+const fuelTypeOptions = ['Petrol', 'Diesel', 'Electric', 'Hybrid', 'CNG']
 const availabilityOptions = ['Available', 'Unavailable']
 
 function AddCar() {
@@ -34,6 +40,10 @@ function AddCar() {
       'imageUrl',
       'seatCapacity',
       'pickupLocation',
+      'modelYear',
+      'transmission',
+      'fuelType',
+      'mileage',
       'description',
       'availabilityStatus',
     ]
@@ -77,6 +87,10 @@ function AddCar() {
       imageUrl: formData.imageUrl.trim(),
       seatCapacity: Number(formData.seatCapacity),
       pickupLocation: formData.pickupLocation.trim(),
+      modelYear: Number(formData.modelYear),
+      transmission: formData.transmission,
+      fuelType: formData.fuelType,
+      mileage: formData.mileage.trim(),
       description: formData.description.trim(),
       availabilityStatus: formData.availabilityStatus,
       ownerEmail: user?.email ?? '',
@@ -228,6 +242,78 @@ function AddCar() {
               onChange={handleChange}
               className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-blue-500"
               placeholder="Enter pickup location"
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-slate-700" htmlFor="modelYear">
+              Model Year
+            </label>
+            <input
+              id="modelYear"
+              name="modelYear"
+              type="number"
+              min="1990"
+              max={new Date().getFullYear() + 1}
+              value={formData.modelYear}
+              onChange={handleChange}
+              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-blue-500"
+              placeholder="e.g. 2024"
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-slate-700" htmlFor="transmission">
+              Transmission
+            </label>
+            <select
+              id="transmission"
+              name="transmission"
+              value={formData.transmission}
+              onChange={handleChange}
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-blue-500"
+              required
+            >
+              <option value="">Select transmission</option>
+              {transmissionOptions.map((t) => (
+                <option key={t} value={t}>{t}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-slate-700" htmlFor="fuelType">
+              Fuel Type
+            </label>
+            <select
+              id="fuelType"
+              name="fuelType"
+              value={formData.fuelType}
+              onChange={handleChange}
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-blue-500"
+              required
+            >
+              <option value="">Select fuel type</option>
+              {fuelTypeOptions.map((f) => (
+                <option key={f} value={f}>{f}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="space-y-2 md:col-span-2">
+            <label className="text-sm font-medium text-slate-700" htmlFor="mileage">
+              Mileage
+            </label>
+            <input
+              id="mileage"
+              name="mileage"
+              type="text"
+              value={formData.mileage}
+              onChange={handleChange}
+              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-blue-500"
+              placeholder="e.g. 12.5 km/l"
               required
             />
           </div>

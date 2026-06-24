@@ -13,6 +13,8 @@ import toast from 'react-hot-toast'
 const API_BASE = 'http://localhost:5050/cars'
 
 const carTypes = ['SUV', 'Sedan', 'Hatchback', 'Luxury', 'Pickup', 'Electric']
+const transmissionOptions = ['Automatic', 'Manual', 'CVT']
+const fuelTypeOptions = ['Petrol', 'Diesel', 'Electric', 'Hybrid', 'CNG']
 const availabilityOptions = ['Available', 'Unavailable']
 
 const emptyForm = {
@@ -22,6 +24,10 @@ const emptyForm = {
   imageUrl: '',
   seatCapacity: '',
   pickupLocation: '',
+  modelYear: '',
+  transmission: '',
+  fuelType: '',
+  mileage: '',
   description: '',
   availabilityStatus: 'Available',
 }
@@ -83,6 +89,10 @@ function UpdateCar() {
           imageUrl: car.imageUrl ?? '',
           seatCapacity: String(car.seatCapacity ?? ''),
           pickupLocation: car.pickupLocation ?? '',
+          modelYear: car.modelYear ? String(car.modelYear) : '',
+          transmission: car.transmission ?? '',
+          fuelType: car.fuelType ?? '',
+          mileage: car.mileage ?? '',
           description: car.description ?? '',
           availabilityStatus: car.availabilityStatus ?? 'Available',
         })
@@ -154,6 +164,11 @@ function UpdateCar() {
       imageUrl: formData.imageUrl.trim(),
       seatCapacity: Number(formData.seatCapacity),
       pickupLocation: formData.pickupLocation.trim(),
+      // New optional fields — only include if user has filled them in
+      ...(formData.modelYear && { modelYear: Number(formData.modelYear) }),
+      ...(formData.transmission && { transmission: formData.transmission }),
+      ...(formData.fuelType && { fuelType: formData.fuelType }),
+      ...(formData.mileage && { mileage: formData.mileage.trim() }),
       description: formData.description.trim(),
       availabilityStatus: formData.availabilityStatus,
     }
@@ -416,6 +431,70 @@ function UpdateCar() {
                     placeholder="e.g. Savar, Dhaka"
                   />
                 </div>
+              </div>
+
+              {/* Model Year */}
+              <div>
+                <label className={labelCls} htmlFor="modelYear">Model Year</label>
+                <input
+                  id="modelYear"
+                  name="modelYear"
+                  type="number"
+                  min="1990"
+                  max={new Date().getFullYear() + 1}
+                  value={formData.modelYear}
+                  onChange={handleChange}
+                  className={inputCls}
+                  placeholder="e.g. 2024"
+                />
+              </div>
+
+              {/* Transmission */}
+              <div>
+                <label className={labelCls} htmlFor="transmission">Transmission</label>
+                <select
+                  id="transmission"
+                  name="transmission"
+                  value={formData.transmission}
+                  onChange={handleChange}
+                  className={selectCls}
+                >
+                  <option value="">Select transmission</option>
+                  {transmissionOptions.map((t) => (
+                    <option key={t} value={t}>{t}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Fuel Type */}
+              <div>
+                <label className={labelCls} htmlFor="fuelType">Fuel Type</label>
+                <select
+                  id="fuelType"
+                  name="fuelType"
+                  value={formData.fuelType}
+                  onChange={handleChange}
+                  className={selectCls}
+                >
+                  <option value="">Select fuel type</option>
+                  {fuelTypeOptions.map((f) => (
+                    <option key={f} value={f}>{f}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Mileage */}
+              <div>
+                <label className={labelCls} htmlFor="mileage">Mileage</label>
+                <input
+                  id="mileage"
+                  name="mileage"
+                  type="text"
+                  value={formData.mileage}
+                  onChange={handleChange}
+                  className={inputCls}
+                  placeholder="e.g. 12.5 km/l"
+                />
               </div>
 
               {/* Image URL — full width */}
