@@ -16,16 +16,7 @@ import {
 const apiBaseUrl = 'http://localhost:5050/cars'
 const placeholderImageUrl = 'https://placehold.co/1200x800?text=Car+Details'
 
-const galleryImages = [
-  '/banner-section-picture.png',
-  'https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&w=1200&q=80',
-  'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80',
-  'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=1200&q=80',
-  'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?auto=format&fit=crop&w=1200&q=80',
-]
-
-const specs = [
-  { label: 'Seats', value: '5 Seats', icon: FiUsers },
+const staticSpecs = [
   { label: 'Transmission', value: 'Automatic', icon: FiTool },
   { label: 'Fuel Type', value: 'Petrol', icon: FiCheckCircle },
   { label: 'Mileage', value: '10.5 km/l', icon: FiClock },
@@ -122,14 +113,15 @@ function CarDetails() {
 
         setSelectedCar({
           id: car._id ?? id,
-          name: `${car.make ?? ''} ${car.model ?? ''}`.trim() || 'Unknown Car',
-          type: car.type ?? 'General',
-          image: car.image ?? placeholderImageUrl,
-          location: car.location ?? 'Unknown Location',
+          name: car.carName ?? 'Unknown Car',
+          type: car.carType ?? 'General',
+          image: car.imageUrl || placeholderImageUrl,
+          location: car.pickupLocation ?? 'Unknown Location',
           dailyRentPrice: car.dailyRentPrice ?? 0,
-          seats: car.seats ?? 'N/A',
+          seats: car.seatCapacity ?? 'N/A',
           rating: car.rating ?? 0,
-          status: car.status ?? 'Available',
+          status: car.availabilityStatus ?? 'Available',
+          description: car.description ?? '',
         })
       } catch (fetchError) {
         if (fetchError.name !== 'AbortError') {
@@ -234,9 +226,9 @@ function CarDetails() {
           </div>
 
           <div className="grid gap-3 sm:grid-cols-4">
-            {galleryImages.slice(1).map((image, index) => (
+            {[selectedCar.image, selectedCar.image, selectedCar.image, selectedCar.image].map((image, index) => (
               <div
-                key={image}
+                key={index}
                 className={`overflow-hidden rounded-2xl border ${
                   index === 0
                     ? 'border-blue-500 shadow-lg'
@@ -245,7 +237,7 @@ function CarDetails() {
               >
                 <img
                   src={image}
-                  alt={`Car thumbnail ${index + 1}`}
+                  alt={`${selectedCar.name} view ${index + 1}`}
                   className="h-20 w-full object-cover"
                 />
               </div>
@@ -295,16 +287,27 @@ function CarDetails() {
             </p>
 
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
-              {specs.map((spec) => (
+              {/* Seats — real MongoDB value */}
+              <div className="flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                  <FiUsers size={16} />
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500">Seats</p>
+                  <p className="text-sm font-semibold text-slate-900">
+                    {selectedCar.seats} Seats
+                  </p>
+                </div>
+              </div>
+              {/* Static specs */}
+              {staticSpecs.map((spec) => (
                 <div key={spec.label} className="flex items-center gap-3">
                   <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
                     <spec.icon size={16} />
                   </div>
                   <div>
                     <p className="text-xs text-slate-500">{spec.label}</p>
-                    <p className="text-sm font-semibold text-slate-900">
-                      {spec.label === 'Seats' ? selectedCar.seats : spec.value}
-                    </p>
+                    <p className="text-sm font-semibold text-slate-900">{spec.value}</p>
                   </div>
                 </div>
               ))}
@@ -325,9 +328,7 @@ function CarDetails() {
                   Pickup Location
                 </label>
                 <select className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm">
-                  <option>Dhaka, Bangladesh</option>
-                  <option>Chattogram, Bangladesh</option>
-                  <option>Sylhet, Bangladesh</option>
+                  <option>{selectedCar.location}</option>
                 </select>
               </div>
               <div>
@@ -399,11 +400,7 @@ function CarDetails() {
         <div className="rounded-3xl border border-slate-200/70 bg-white p-6 shadow-[0_18px_40px_-30px_rgba(15,23,42,0.6)]">
           <h2 className="text-lg font-semibold text-slate-900">About This Car</h2>
           <p className="mt-3 text-sm text-slate-600">
-            The {selectedCar.name} is a premium vehicle that delivers an
-            exceptional driving experience. It comes with modern comfort,
-            advanced safety features, and a refined interior. Whether you are
-            planning a family trip or a business journey, this car ensures
-            comfort, style, and reliability.
+            {selectedCar.description || `The ${selectedCar.name} combines comfort, style, and versatility. Perfect for city drives or long road trips.`}
           </p>
         </div>
         <div className="rounded-3xl border border-slate-200/70 bg-white p-6 shadow-[0_18px_40px_-30px_rgba(15,23,42,0.6)]">
