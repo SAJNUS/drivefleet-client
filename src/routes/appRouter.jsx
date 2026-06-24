@@ -12,6 +12,7 @@ import UpdateCar from '../pages/UpdateCar.jsx'
 import Login from '../pages/Login.jsx'
 import Register from '../pages/Register.jsx'
 import NotFound from '../pages/NotFound.jsx'
+import Profile from '../pages/Profile.jsx'
 
 const appRouter = createBrowserRouter([
   {
@@ -36,6 +37,7 @@ const appRouter = createBrowserRouter([
           { path: 'update-car/:id', element: <UpdateCar /> },
           { path: 'my-bookings', element: <MyBookings /> },
           { path: 'my-added-cars', element: <MyAddedCars /> },
+          { path: 'profile', element: <Profile /> },
         ],
       },
     ],

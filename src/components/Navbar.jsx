@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
-import { FiChevronDown, FiLogOut } from 'react-icons/fi'
+import { FiChevronDown, FiLogOut, FiUser, FiList } from 'react-icons/fi'
 import useAuth from '../hooks/useAuth.js'
 
 const navLinks = [
@@ -148,24 +148,19 @@ function Navbar() {
                   </div>
                   <div className="p-2 text-sm text-slate-600">
                     <Link
-                      to="/add-car"
+                      to="/profile"
                       onClick={() => setMenuOpen(false)}
-                      className="block rounded-lg px-3 py-2 transition hover:bg-slate-50 hover:text-slate-900"
+                      className="flex items-center gap-2 rounded-lg px-3 py-2 transition hover:bg-slate-50 hover:text-slate-900"
                     >
-                      Add Car
-                    </Link>
-                    <Link
-                      to="/my-bookings"
-                      onClick={() => setMenuOpen(false)}
-                      className="block rounded-lg px-3 py-2 transition hover:bg-slate-50 hover:text-slate-900"
-                    >
-                      My Bookings
+                      <FiUser size={14} />
+                      Profile
                     </Link>
                     <Link
                       to="/my-added-cars"
                       onClick={() => setMenuOpen(false)}
-                      className="block rounded-lg px-3 py-2 transition hover:bg-slate-50 hover:text-slate-900"
+                      className="flex items-center gap-2 rounded-lg px-3 py-2 transition hover:bg-slate-50 hover:text-slate-900"
                     >
+                      <FiList size={14} />
                       My Added Cars
                     </Link>
                     <button
