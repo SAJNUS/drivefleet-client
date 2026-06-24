@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import {
   FiCalendar,
   FiCheckCircle,
@@ -12,8 +12,10 @@ import {
   FiUser,
   FiUsers,
 } from 'react-icons/fi'
+import toast from 'react-hot-toast'
+import useAuth from '../hooks/useAuth.js'
 
-const apiBaseUrl = 'http://localhost:5050/cars'
+const API_BASE = 'http://localhost:5050'
 const placeholderImageUrl = 'https://placehold.co/1200x800?text=Car+Image'
 
 const sectionVariant = {
@@ -36,12 +38,32 @@ function SpecTile({ icon: Icon, label, value }) {
   )
 }
 
+// ─── Calculate rental days between two ISO date strings ───────────────────────
+function calcRentalDays(start, end) {
+  if (!start || !end) return 0
+  const diff = new Date(end) - new Date(start)
+  return diff > 0 ? Math.ceil(diff / 86400000) : 0
+}
+
 function CarDetails() {
   const { id } = useParams()
+  const navigate = useNavigate()
+  const { user } = useAuth()
 
   const [selectedCar, setSelectedCar] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+
+  // Booking form state
+  const [startDate, setStartDate] = useState('')
+  const [endDate, setEndDate] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+
+  // Live cost calculation
+  const rentalDays = calcRentalDays(startDate, endDate)
+  const totalCost = rentalDays > 0 && selectedCar
+    ? rentalDays * selectedCar.dailyRentPrice
+    : 0
 
   useEffect(() => {
     const controller = new AbortController()
@@ -51,7 +73,7 @@ function CarDetails() {
         setLoading(true)
         setError('')
 
-        const response = await fetch(`${apiBaseUrl}/${id}`, {
+        const response = await fetch(`${API_BASE}/cars/${id}`, {
           signal: controller.signal,
         })
 
@@ -106,6 +128,78 @@ function CarDetails() {
     return () => controller.abort()
   }, [id])
 
+  // ── Book Now handler ─────────────────────────────────────────────────────────
+  const handleBooking = async () => {
+    // Guard: must be logged in
+    if (!user) {
+      toast.error('Please log in to book a car.')
+      return
+    }
+
+    // Guard: car unavailable
+    if (selectedCar.status !== 'Available') {
+      toast.error('This car is currently unavailable.')
+      return
+    }
+
+    // Guard: cannot book own car
+    if (selectedCar.ownerEmail && user.email === selectedCar.ownerEmail) {
+      toast.error('You cannot book your own car.')
+      return
+    }
+
+    // Guard: dates required
+    if (!startDate || !endDate) {
+      toast.error('Please select both pickup and return dates.')
+      return
+    }
+
+    // Guard: date order
+    if (rentalDays <= 0) {
+      toast.error('Return date must be after the pickup date.')
+      return
+    }
+
+    setSubmitting(true)
+
+    const bookingPayload = {
+      carId: selectedCar.id,
+      carName: selectedCar.name,
+      carImage: selectedCar.image,
+      pickupLocation: selectedCar.location,
+      ownerEmail: selectedCar.ownerEmail ?? '',
+      renterEmail: user.email,
+      startDate,
+      endDate,
+      totalCost,
+      bookingStatus: 'Upcoming',
+    }
+
+    try {
+      const response = await fetch(`${API_BASE}/bookings`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(bookingPayload),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Failed to create booking.')
+      }
+
+      toast.success(`${selectedCar.name} booked successfully!`)
+      navigate('/my-bookings')
+    } catch (err) {
+      toast.error(err.message || 'Something went wrong. Please try again.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  // ── Today's date for min attribute ──────────────────────────────────────────
+  const today = new Date().toISOString().split('T')[0]
+
   // ── Loading ──────────────────────────────────────────────────────────────────
   if (loading) {
     return (
@@ -141,6 +235,8 @@ function CarDetails() {
   }
 
   const isAvailable = selectedCar.status === 'Available'
+  const isOwnCar = user && selectedCar.ownerEmail && user.email === selectedCar.ownerEmail
+  const canBook = isAvailable && !isOwnCar
 
   return (
     <div className="space-y-8">
@@ -168,7 +264,7 @@ function CarDetails() {
           {/* Car info card */}
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
 
-            {/* Name + price row */}
+            {/* Name + price */}
             <div className="flex flex-wrap items-start justify-between gap-3">
               <h1 className="text-xl font-bold text-slate-900 sm:text-2xl">
                 {selectedCar.name}
@@ -197,18 +293,16 @@ function CarDetails() {
             </div>
 
             {/* Description */}
-            {selectedCar.description && (
+            {selectedCar.description ? (
               <p className="mt-4 text-sm leading-relaxed text-slate-600">
                 {selectedCar.description}
               </p>
-            )}
-            {!selectedCar.description && (
+            ) : (
               <p className="mt-4 text-sm italic text-slate-400">
                 No description available.
               </p>
             )}
 
-            {/* Divider */}
             <hr className="my-4 border-slate-100" />
 
             {/* Specs — 2×3 grid */}
@@ -284,80 +378,92 @@ function CarDetails() {
               <span className="text-sm font-normal text-slate-400"> / day</span>
             </p>
 
+            {/* Unavailable notice */}
+            {!isAvailable && (
+              <div className="mt-3 rounded-lg bg-rose-50 px-3 py-2 text-xs font-medium text-rose-600">
+                This car is currently unavailable for booking.
+              </div>
+            )}
+
+            {/* Own car notice */}
+            {isOwnCar && (
+              <div className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-xs font-medium text-amber-700">
+                This is your own listing — you cannot book it.
+              </div>
+            )}
+
             <div className="mt-4 space-y-4">
+
               {/* Pickup location */}
               <div>
                 <label className="text-xs font-semibold text-slate-500">
                   Pickup Location
                 </label>
-                <select className="mt-1.5 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-blue-400">
-                  <option>{selectedCar.location}</option>
-                </select>
+                <div className="mt-1.5 flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-600">
+                  <FiMapPin size={13} className="shrink-0 text-slate-400" />
+                  {selectedCar.location}
+                </div>
               </div>
 
               {/* Pickup date */}
               <div>
-                <label className="text-xs font-semibold text-slate-500">
+                <label htmlFor="startDate" className="text-xs font-semibold text-slate-500">
                   Pickup Date
                 </label>
                 <input
+                  id="startDate"
                   type="date"
+                  min={today}
+                  value={startDate}
+                  onChange={(e) => {
+                    setStartDate(e.target.value)
+                    // If endDate is now invalid, clear it
+                    if (endDate && e.target.value >= endDate) setEndDate('')
+                  }}
                   className="mt-1.5 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-blue-400"
                 />
               </div>
 
               {/* Return date */}
               <div>
-                <label className="text-xs font-semibold text-slate-500">
+                <label htmlFor="endDate" className="text-xs font-semibold text-slate-500">
                   Return Date
                 </label>
                 <input
+                  id="endDate"
                   type="date"
+                  min={startDate || today}
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
                   className="mt-1.5 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-blue-400"
                 />
               </div>
 
-              {/* Driver needed */}
-              <div>
-                <label className="text-xs font-semibold text-slate-500">
-                  Driver Needed?
-                </label>
-                <div className="mt-1.5 flex items-center gap-5 text-sm text-slate-700">
-                  <label className="flex cursor-pointer items-center gap-1.5">
-                    <input type="radio" name="driver" /> Yes
-                  </label>
-                  <label className="flex cursor-pointer items-center gap-1.5">
-                    <input type="radio" name="driver" defaultChecked /> No
-                  </label>
-                </div>
-              </div>
-
-              {/* Special note */}
-              <div>
-                <label className="text-xs font-semibold text-slate-500">
-                  Special Note (Optional)
-                </label>
-                <textarea
-                  rows="3"
-                  className="mt-1.5 w-full resize-none rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-700 outline-none placeholder:text-slate-400 focus:border-blue-400"
-                  placeholder="Write any special note..."
-                />
-              </div>
-
-              {/* Total price */}
+              {/* Live rental summary */}
               <div className="flex items-center justify-between border-t border-slate-100 pt-3 text-sm">
                 <span className="font-medium text-slate-600">Total Price</span>
-                <span className="text-xs italic text-slate-400">
-                  Select dates to calculate total
-                </span>
+                {rentalDays > 0 ? (
+                  <span className="font-bold text-slate-900">
+                    ${totalCost}
+                    <span className="ml-1 text-xs font-normal text-slate-400">
+                      ({rentalDays} {rentalDays === 1 ? 'day' : 'days'})
+                    </span>
+                  </span>
+                ) : (
+                  <span className="text-xs italic text-slate-400">
+                    Select dates to calculate total
+                  </span>
+                )}
               </div>
 
-              {/* Book now */}
+              {/* Book Now */}
               <button
                 type="button"
-                className="w-full rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
+                onClick={handleBooking}
+                disabled={!canBook || submitting}
+                className="w-full rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                Book Now
+                {submitting ? 'Booking…' : 'Book Now'}
               </button>
 
               {/* Cancellation note */}
