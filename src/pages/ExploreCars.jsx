@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Link } from 'react-router-dom'
 import {
   FiChevronDown,
   FiChevronLeft,
@@ -12,7 +11,8 @@ import {
   FiSearch,
 } from 'react-icons/fi'
 import CarCard from '../components/CarCard.jsx'
-import { carCatalog, exploreCarTypes } from '../data/cars.js'
+
+const apiUrl = 'http://localhost:5050/cars'
 
 const bannerImage = '/banner-section-picture.png'
 
@@ -28,15 +28,58 @@ const staggerContainer = {
 
 function ExploreCars() {
   const itemsPerPage = 6
+  const [cars, setCars] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedTypes, setSelectedTypes] = useState(['All Types'])
   const [sortOrder, setSortOrder] = useState('low-to-high')
   const [currentPage, setCurrentPage] = useState(1)
 
+  useEffect(() => {
+    const controller = new AbortController()
+
+    async function loadCars() {
+      try {
+        setLoading(true)
+        setError('')
+
+        const response = await fetch(apiUrl, { signal: controller.signal })
+
+        if (!response.ok) {
+          throw new Error(`Failed to load cars (${response.status})`)
+        }
+
+        const payload = await response.json()
+        const nextCars = Array.isArray(payload?.data) ? payload.data : []
+        setCars(nextCars)
+      } catch (fetchError) {
+        if (fetchError.name !== 'AbortError') {
+          setError(fetchError.message || 'Failed to load cars')
+          setCars([])
+        }
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadCars()
+
+    return () => controller.abort()
+  }, [])
+
+  const exploreCarTypes = useMemo(() => {
+    const uniqueTypes = Array.from(
+      new Set(cars.map((car) => car.type).filter(Boolean)),
+    )
+
+    return ['All Types', ...uniqueTypes]
+  }, [cars])
+
   const filteredCars = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLowerCase()
 
-    let result = carCatalog.filter((car) => {
+    let result = cars.filter((car) => {
       const matchesSearch = normalizedSearch
         ? car.name.toLowerCase().includes(normalizedSearch)
         : true
@@ -55,7 +98,7 @@ function ExploreCars() {
     })
 
     return result
-  }, [searchTerm, selectedTypes, sortOrder])
+  }, [cars, searchTerm, selectedTypes, sortOrder])
 
   const totalPages = Math.max(1, Math.ceil(filteredCars.length / itemsPerPage))
 
@@ -101,13 +144,43 @@ function ExploreCars() {
   const startItem = filteredCars.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1
   const endItem = Math.min(currentPage * itemsPerPage, filteredCars.length)
 
+  if (loading) {
+    return (
+      <div className="rounded-3xl border border-slate-200/70 bg-white p-8 text-center shadow-xl">
+        <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">
+          Loading Cars
+        </p>
+        <h1 className="mt-3 text-2xl font-semibold text-slate-900">
+          Fetching the latest car listings
+        </h1>
+        <p className="mt-2 text-sm text-slate-600">
+          Please wait while we load data from the server.
+        </p>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-3xl border border-rose-200/70 bg-white p-8 text-center shadow-xl">
+        <p className="text-sm font-semibold uppercase tracking-wide text-rose-600">
+          Error Loading Cars
+        </p>
+        <h1 className="mt-3 text-2xl font-semibold text-slate-900">
+          Unable to load car listings
+        </h1>
+        <p className="mt-2 text-sm text-slate-600">{error}</p>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-10">
       <motion.section
         variants={sectionVariant}
         initial="hidden"
         animate="show"
-        className="relative overflow-hidden rounded-3xl border border-slate-200/70 bg-gradient-to-r from-blue-50 via-white to-slate-50 px-6 py-10 shadow-xl md:px-10"
+        className="relative overflow-hidden rounded-3xl border border-slate-200/70 bg-linear-to-r from-blue-50 via-white to-slate-50 px-6 py-10 shadow-xl md:px-10"
       >
         <div className="absolute inset-0">
           <img
@@ -115,7 +188,7 @@ function ExploreCars() {
             alt="Explore cars"
             className="h-full w-full object-cover object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-50/90 via-blue-50/70 to-blue-50/20" />
+          <div className="absolute inset-0 bg-linear-to-r from-blue-50/90 via-blue-50/70 to-blue-50/20" />
         </div>
         <div className="relative grid gap-8 md:grid-cols-[1.2fr_0.8fr]">
           <div className="space-y-3">
@@ -178,7 +251,7 @@ function ExploreCars() {
             <button
               type="button"
               onClick={clearFilters}
-              className="w-full rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 px-4 py-2 text-xs font-semibold text-white"
+              className="w-full rounded-lg bg-linear-to-r from-blue-600 to-blue-500 px-4 py-2 text-xs font-semibold text-white"
             >
               Clear Filters
             </button>
@@ -233,6 +306,12 @@ function ExploreCars() {
               </motion.div>
             ))}
           </motion.div>
+
+          {filteredCars.length === 0 && (
+            <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-600">
+              No cars match your current search and filter settings.
+            </div>
+          )}
 
           <div className="flex flex-wrap items-center justify-center gap-2">
             <button
