@@ -34,16 +34,18 @@ function Navbar() {
   return (
     <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/80 shadow-sm backdrop-blur">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-        <Link to="/" className="flex flex-col">
-          <p className="text-xl font-semibold text-slate-900">
-            Drive<span className="text-blue-600">Fleet</span>
-          </p>
-          <p className="text-xs uppercase tracking-wider text-slate-500">
-            Car Rental
-          </p>
-        </Link>
+        <div className="flex flex-1 items-center justify-start">
+          <Link to="/" className="flex flex-col">
+            <p className="text-xl font-semibold text-slate-900">
+              Drive<span className="text-blue-600">Fleet</span>
+            </p>
+            <p className="text-xs uppercase tracking-wider text-slate-500">
+              Car Rental
+            </p>
+          </Link>
+        </div>
 
-        <nav className="hidden items-center gap-8 text-sm font-semibold text-slate-600 md:flex">
+        <nav className="hidden items-center justify-center gap-8 text-sm font-semibold text-slate-600 md:flex">
           {navLinks.map((link) => (
             <NavLink
               key={link.to}
@@ -89,7 +91,7 @@ function Navbar() {
           )}
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-1 items-center justify-end gap-3">
           {!user ? (
             <div className="flex items-center gap-2">
               <Link
