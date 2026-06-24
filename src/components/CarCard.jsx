@@ -1,4 +1,4 @@
-import { FiHeart, FiMapPin, FiStar, FiUsers } from 'react-icons/fi'
+import { FiMapPin, FiStar, FiUsers } from 'react-icons/fi'
 import { Link } from 'react-router-dom'
 
 const carTagStyles = {
@@ -13,10 +13,13 @@ function CarCard({ car, variant = 'explore' }) {
     <article
       className={
         variant === 'home'
-          ? 'flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-[0_18px_40px_-30px_rgba(15,23,42,0.6)]'
-          : 'flex h-full flex-col rounded-2xl border border-slate-200/70 bg-white p-4 shadow-[0_18px_40px_-30px_rgba(15,23,42,0.6)]'
+          ? 'relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-[0_18px_40px_-30px_rgba(15,23,42,0.6)]'
+          : 'relative flex h-full flex-col rounded-2xl border border-slate-200/70 bg-white p-4 shadow-[0_18px_40px_-30px_rgba(15,23,42,0.6)]'
       }
     >
+      <Link to={`/car-details/${car.id}`} className="absolute inset-0 z-10">
+        <span className="sr-only">View details for {car.name}</span>
+      </Link>
       <div className={variant === 'home' ? 'relative bg-gradient-to-b from-slate-50 to-white' : 'relative overflow-hidden rounded-2xl bg-slate-50'}>
         <span
           className={`absolute left-3 top-3 rounded-md px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide shadow opacity-90 ${
@@ -25,14 +28,7 @@ function CarCard({ car, variant = 'explore' }) {
         >
           {car.type}
         </span>
-        {variant === 'explore' && (
-          <button
-            type="button"
-            className="absolute right-3 top-3 rounded-full bg-white/90 p-2 text-slate-500 shadow"
-          >
-            <FiHeart size={14} />
-          </button>
-        )}
+
         <img
           src={car.image}
           alt={car.name}
@@ -49,10 +45,11 @@ function CarCard({ car, variant = 'explore' }) {
         </div>
 
         <div className="flex items-center justify-between text-sm text-slate-600">
-          <span className={variant === 'home' ? 'text-lg font-semibold text-blue-600' : 'text-sm font-semibold text-blue-600'}>
-            ${car.dailyRentPrice}
-            <span className="text-xs font-medium text-slate-500">/day</span>
-          </span>
+          <div className={variant === 'home' ? 'flex items-baseline gap-1 text-lg text-blue-600' : 'flex items-baseline gap-1 text-sm text-blue-600'}>
+            <span className="font-normal">BDT</span>
+            <span className="font-bold">{car.dailyRentPrice}</span>
+            <span className={variant === 'home' ? 'text-xs font-medium text-slate-500' : 'text-[10px] font-medium text-slate-500'}>/day</span>
+          </div>
           <span className="flex items-center gap-1 text-xs">
             <FiUsers size={14} /> {car.seats}
           </span>
@@ -77,7 +74,7 @@ function CarCard({ car, variant = 'explore' }) {
             </span>
             <Link
               to={`/car-details/${car.id}`}
-              className="rounded-lg border border-blue-100 bg-blue-50 px-4 py-2 text-xs font-semibold text-blue-700"
+              className="relative z-20 rounded-lg border border-blue-100 bg-blue-50 px-4 py-2 text-xs font-semibold text-blue-700"
             >
               View Details
             </Link>
@@ -85,7 +82,7 @@ function CarCard({ car, variant = 'explore' }) {
         ) : (
           <Link
             to={`/car-details/${car.id}`}
-            className="mt-auto rounded-lg border border-blue-100 bg-blue-50 px-4 py-2 text-center text-xs font-semibold text-blue-700 transition hover:border-blue-200 hover:bg-blue-100"
+            className="relative z-20 mt-auto rounded-lg border border-blue-100 bg-blue-50 px-4 py-2 text-center text-xs font-semibold text-blue-700 transition hover:border-blue-200 hover:bg-blue-100"
           >
             View Details
           </Link>

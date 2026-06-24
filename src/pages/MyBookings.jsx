@@ -218,9 +218,10 @@ function MyBookings() {
             </div>
             <div>
               <p className="text-sm text-slate-500">Total Spent</p>
-              <p className="text-2xl font-semibold text-slate-900">
-                ${totalSpent.toLocaleString()}
-              </p>
+              <div className="flex items-baseline gap-1 text-2xl text-slate-900">
+                <span className="font-normal">BDT</span>
+                <span className="font-bold">{totalSpent.toLocaleString()}</span>
+              </div>
               <p className="text-xs text-slate-400">{cancelledCount} cancelled</p>
             </div>
           </div>
@@ -291,8 +292,9 @@ function MyBookings() {
                   <td className="px-5 py-4 text-sm text-slate-500">
                     {formatDate(booking.bookingDate)}
                   </td>
-                  <td className="px-5 py-4 text-sm font-semibold text-blue-600">
-                    ${booking.totalCost?.toLocaleString() ?? '—'}
+                  <td className="px-5 py-4 text-sm text-blue-600">
+                    <span className="font-normal mr-1">BDT</span>
+                    <span className="font-bold">{booking.totalCost?.toLocaleString() ?? '—'}</span>
                   </td>
                   <td className="px-5 py-4">
                     <StatusBadge status={booking.bookingStatus} />
@@ -377,9 +379,10 @@ function MyBookings() {
                     </div>
                     <div className="rounded-lg bg-white px-3 py-2">
                       <p className="text-slate-400">Total Cost</p>
-                      <p className="font-semibold text-blue-600">
-                        ${booking.totalCost?.toLocaleString() ?? '—'}
-                      </p>
+                      <div className="flex items-baseline gap-1 text-blue-600">
+                        <span className="font-normal">BDT</span>
+                        <span className="font-bold">{booking.totalCost?.toLocaleString() ?? '—'}</span>
+                      </div>
                     </div>
                   </div>
 

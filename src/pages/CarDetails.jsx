@@ -269,10 +269,11 @@ function CarDetails() {
               <h1 className="text-xl font-bold text-slate-900 sm:text-2xl">
                 {selectedCar.name}
               </h1>
-              <p className="text-xl font-bold text-blue-600">
-                ${selectedCar.dailyRentPrice}
-                <span className="text-sm font-normal text-slate-400"> / day</span>
-              </p>
+              <div className="flex items-baseline gap-1 text-xl text-blue-600">
+                <span className="font-normal">BDT</span>
+                <span className="font-bold">{selectedCar.dailyRentPrice}</span>
+                <span className="text-sm font-normal text-slate-400">/day</span>
+              </div>
             </div>
 
             {/* Location + availability */}
@@ -370,13 +371,14 @@ function CarDetails() {
         </div>
 
         {/* ── RIGHT COLUMN — booking card ── */}
-        <div className="lg:sticky lg:top-6 lg:self-start">
+        <div className="lg:sticky lg:top-28 lg:self-start">
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <h2 className="text-base font-bold text-slate-900">Book This Car</h2>
-            <p className="mt-1 text-xl font-bold text-blue-600">
-              ${selectedCar.dailyRentPrice}
-              <span className="text-sm font-normal text-slate-400"> / day</span>
-            </p>
+            <div className="mt-1 flex items-baseline gap-1 text-xl text-blue-600">
+              <span className="font-normal">BDT</span>
+              <span className="font-bold">{selectedCar.dailyRentPrice}</span>
+              <span className="text-sm font-normal text-slate-400">/day</span>
+            </div>
 
             {/* Unavailable notice */}
             {!isAvailable && (
@@ -443,12 +445,13 @@ function CarDetails() {
               <div className="flex items-center justify-between border-t border-slate-100 pt-3 text-sm">
                 <span className="font-medium text-slate-600">Total Price</span>
                 {rentalDays > 0 ? (
-                  <span className="font-bold text-slate-900">
-                    ${totalCost}
+                  <div className="flex items-baseline gap-1 text-slate-900">
+                    <span className="font-normal">BDT</span>
+                    <span className="font-bold">{totalCost}</span>
                     <span className="ml-1 text-xs font-normal text-slate-400">
                       ({rentalDays} {rentalDays === 1 ? 'day' : 'days'})
                     </span>
-                  </span>
+                  </div>
                 ) : (
                   <span className="text-xs italic text-slate-400">
                     Select dates to calculate total

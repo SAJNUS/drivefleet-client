@@ -160,13 +160,14 @@ function MyAddedCars() {
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-50 text-2xl text-violet-600">
-              $
+              ৳
             </div>
             <div>
               <p className="text-sm text-slate-500">Total Earnings</p>
-              <p className="text-2xl font-semibold text-slate-900">
-                ${totalEarnings.toLocaleString()}
-              </p>
+              <div className="flex items-baseline gap-1 text-2xl text-slate-900">
+                <span className="font-normal">BDT</span>
+                <span className="font-bold">{totalEarnings.toLocaleString()}</span>
+              </div>
               <p className="text-xs text-slate-500">From your cars</p>
             </div>
           </div>
@@ -210,8 +211,11 @@ function MyAddedCars() {
             {userCars.map((car) => (
               <article
                 key={car._id}
-                className="flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+                className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md"
               >
+                <Link to={`/car-details/${car._id}`} className="absolute inset-0 z-10">
+                  <span className="sr-only">View {car.carName} details</span>
+                </Link>
                 <div className="relative h-52 overflow-hidden bg-slate-100">
                   <img
                     src={car.imageUrl}
@@ -243,10 +247,11 @@ function MyAddedCars() {
                       </span>
                     </div>
 
-                    <p className="text-xl font-semibold text-blue-600">
-                      ${car.dailyRentPrice}
-                      <span className="text-sm font-medium text-slate-500"> / day</span>
-                    </p>
+                    <div className="flex items-baseline gap-1 text-xl text-blue-600">
+                      <span className="font-normal">BDT</span>
+                      <span className="font-bold">{car.dailyRentPrice}</span>
+                      <span className="text-sm font-medium text-slate-500">/day</span>
+                    </div>
                   </div>
 
                   <div className="mt-5 flex flex-1 flex-col justify-between gap-5">
@@ -276,7 +281,7 @@ function MyAddedCars() {
                     <div className="grid grid-cols-2 gap-3">
                       <Link
                         to={`/update-car/${car._id}`}
-                        className="inline-flex items-center justify-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-semibold text-blue-700 transition hover:bg-blue-100"
+                        className="relative z-20 inline-flex items-center justify-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-semibold text-blue-700 transition hover:bg-blue-100"
                       >
                         <FiEdit3 size={14} />
                         Update
@@ -284,7 +289,7 @@ function MyAddedCars() {
                       <button
                         type="button"
                         onClick={() => setDeleteTarget(car)}
-                        className="inline-flex items-center justify-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-600 transition hover:bg-rose-100"
+                        className="relative z-20 inline-flex items-center justify-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-600 transition hover:bg-rose-100"
                       >
                         <FiTrash2 size={14} />
                         Delete
