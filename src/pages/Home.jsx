@@ -8,8 +8,9 @@ import {
   FiStar,
   FiUsers,
 } from 'react-icons/fi'
+import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import CarCard from '../components/CarCard.jsx'
-import { carCatalog } from '../data/cars.js'
 
 const heroImage = '/banner-section-picture.png'
 
@@ -80,7 +81,39 @@ const staggerContainer = {
 }
 
 function Home() {
-  const featuredCars = carCatalog.slice(0, 6)
+  const [featuredCars, setFeaturedCars] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchLatestCars() {
+      try {
+        const response = await fetch('http://localhost:5050/cars')
+        if (response.ok) {
+          const result = await response.json()
+          const data = Array.isArray(result.data) ? result.data : []
+          
+          const transformed = data.map((car) => ({
+            id: car._id,
+            name: car.carName ?? '',
+            type: car.carType ?? 'General',
+            image: car.imageUrl || 'https://placehold.co/600x400?text=Car',
+            location: car.pickupLocation ?? 'Unknown Location',
+            dailyRentPrice: car.dailyRentPrice ?? 0,
+            seats: car.seatCapacity ?? 'N/A',
+            rating: car.rating ?? 0,
+            status: car.availabilityStatus ?? 'Available',
+          }))
+          
+          setFeaturedCars(transformed.reverse().slice(0, 6))
+        }
+      } catch (error) {
+        console.error('Failed to fetch latest cars:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchLatestCars()
+  }, [])
 
   return (
     <div className="space-y-24">
@@ -113,13 +146,13 @@ function Home() {
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-4">
-              <button
-                type="button"
+              <Link
+                to="/explore-cars"
                 className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:from-blue-700 hover:to-blue-600"
               >
                 Explore Cars
                 <FiArrowRight size={16} />
-              </button>
+              </Link>
               <div className="rounded-lg border border-white/70 bg-white/70 px-3 py-2 text-xs text-slate-500 shadow-sm backdrop-blur">
                 4.9/5 average rating
               </div>
@@ -160,33 +193,43 @@ function Home() {
               Choose from the latest arrivals
             </h2>
           </div>
-          <button
-            type="button"
+          <Link
+            to="/explore-cars"
             className="inline-flex items-center gap-2 rounded-lg border border-blue-100 bg-blue-50 px-4 py-2 text-xs font-semibold text-blue-700"
           >
             View All Cars <FiArrowRight size={16} />
-          </button>
+          </Link>
         </div>
 
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.2 }}
-          className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
-        >
-          {featuredCars.map((car) => (
-            <motion.article
-              key={car.id}
-              variants={sectionVariant}
-              whileHover={{ y: -6 }}
-              transition={{ duration: 0.2 }}
-              className=""
-            >
-              <CarCard car={car} variant="home" />
-            </motion.article>
-          ))}
-        </motion.div>
+        {loading ? (
+          <div className="flex min-h-[200px] items-center justify-center rounded-2xl border border-slate-200/70 bg-white/50 text-sm font-medium text-slate-500">
+            Loading latest arrivals...
+          </div>
+        ) : featuredCars.length > 0 ? (
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.2 }}
+            className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+          >
+            {featuredCars.map((car) => (
+              <motion.article
+                key={car.id}
+                variants={sectionVariant}
+                whileHover={{ y: -6 }}
+                transition={{ duration: 0.2 }}
+                className=""
+              >
+                <CarCard car={car} variant="home" />
+              </motion.article>
+            ))}
+          </motion.div>
+        ) : (
+          <div className="flex min-h-[200px] items-center justify-center rounded-2xl border border-slate-200/70 bg-white/50 text-sm font-medium text-slate-500">
+            No cars available at the moment.
+          </div>
+        )}
       </motion.section>
 
       <motion.section
@@ -287,12 +330,12 @@ function Home() {
             Find the perfect car for your next adventure.
           </h3>
         </div>
-        <button
-          type="button"
+        <Link
+          to="/explore-cars"
           className="inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-semibold text-slate-900 shadow-lg"
         >
           Explore Cars Now <FiArrowRight size={16} />
-        </button>
+        </Link>
       </motion.section>
     </div>
   )
