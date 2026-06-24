@@ -98,7 +98,6 @@ function CarDetails() {
       try {
         setLoading(true)
         setError('')
-        setSelectedCar(null)
 
         const response = await fetch(`${apiBaseUrl}/${id}`, {
           signal: controller.signal,
@@ -175,6 +174,22 @@ function CarDetails() {
         </p>
         <h1 className="mt-3 text-2xl font-semibold text-slate-900">
           {error}
+        </h1>
+        <p className="mt-2 text-sm text-slate-600">
+          Please go back to Explore Cars and choose a valid listing.
+        </p>
+      </div>
+    )
+  }
+
+  if (!selectedCar) {
+    return (
+      <div className="rounded-3xl border border-slate-200/70 bg-white p-8 text-center shadow-xl">
+        <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">
+          Car not found
+        </p>
+        <h1 className="mt-3 text-2xl font-semibold text-slate-900">
+          The selected car does not exist
         </h1>
         <p className="mt-2 text-sm text-slate-600">
           Please go back to Explore Cars and choose a valid listing.
