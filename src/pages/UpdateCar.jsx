@@ -9,6 +9,7 @@ import {
 } from 'react-icons/fi'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
+import useAuth from '../hooks/useAuth'
 
 const API_BASE = 'http://localhost:5050/cars'
 
@@ -42,6 +43,7 @@ const selectCls =
 function UpdateCar() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { user } = useAuth()
 
   const [formData, setFormData] = useState(emptyForm)
   const [loading, setLoading] = useState(true)
@@ -174,9 +176,13 @@ function UpdateCar() {
     }
 
     try {
+      const token = await user.getIdToken()
       const response = await fetch(`${API_BASE}/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(updatedCarObject),
       })
 

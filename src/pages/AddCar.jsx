@@ -97,10 +97,12 @@ function AddCar() {
     }
 
     try {
+      const token = await user.getIdToken()
       const response = await fetch('http://localhost:5050/cars', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(carObject),
       })

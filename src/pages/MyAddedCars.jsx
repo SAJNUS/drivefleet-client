@@ -23,9 +23,13 @@ function MyAddedCars() {
         setLoading(true)
         setError('')
 
+        const token = await user.getIdToken()
         const response = await fetch(
           `http://localhost:5050/cars?email=${encodeURIComponent(user.email)}`,
-          { signal: controller.signal },
+          {
+            signal: controller.signal,
+            headers: { Authorization: `Bearer ${token}` },
+          },
         )
 
         if (!response.ok) {
@@ -59,9 +63,13 @@ function MyAddedCars() {
 
     setDeleting(true)
     try {
+      const token = await user.getIdToken()
       const response = await fetch(
         `http://localhost:5050/cars/${deleteTarget._id}`,
-        { method: 'DELETE' },
+        {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${token}` },
+        },
       )
 
       if (!response.ok) {

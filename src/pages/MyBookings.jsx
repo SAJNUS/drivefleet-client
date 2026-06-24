@@ -57,9 +57,13 @@ function MyBookings() {
       try {
         setLoadingBookings(true)
 
+        const token = await user.getIdToken()
         const response = await fetch(
           `${API_BASE}?email=${encodeURIComponent(user.email)}`,
-          { signal: controller.signal },
+          {
+            signal: controller.signal,
+            headers: { Authorization: `Bearer ${token}` },
+          },
         )
 
         if (!response.ok) {
@@ -108,8 +112,10 @@ function MyBookings() {
 
     setCancelling(true)
     try {
+      const token = await user.getIdToken()
       const response = await fetch(`${API_BASE}/${cancelTarget._id}`, {
         method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
       })
 
       if (!response.ok) {
