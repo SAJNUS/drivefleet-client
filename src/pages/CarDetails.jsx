@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { useMemo } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import {
   FiCalendar,
@@ -12,7 +12,9 @@ import {
   FiTool,
   FiUsers,
 } from 'react-icons/fi'
-import { carCatalog } from '../data/cars.js'
+
+const apiBaseUrl = 'http://localhost:5050/cars'
+const placeholderImageUrl = 'https://placehold.co/1200x800?text=Car+Details'
 
 const galleryImages = [
   '/banner-section-picture.png',
@@ -85,19 +87,94 @@ const sectionVariant = {
 function CarDetails() {
   const { id } = useParams()
 
-  const selectedCar = useMemo(
-    () => carCatalog.find((car) => String(car.id) === String(id)),
-    [id],
-  )
+  const [selectedCar, setSelectedCar] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
-  if (!selectedCar) {
+  useEffect(() => {
+    const controller = new AbortController()
+
+    async function loadCar() {
+      try {
+        setLoading(true)
+        setError('')
+        setSelectedCar(null)
+
+        const response = await fetch(`${apiBaseUrl}/${id}`, {
+          signal: controller.signal,
+        })
+
+        if (!response.ok) {
+          if (response.status === 404) {
+            setError('Car not found')
+            return
+          }
+
+          throw new Error(`Failed to load car (${response.status})`)
+        }
+
+        const payload = await response.json()
+        const car = payload?.data ?? null
+
+        if (!car) {
+          setError('Car not found')
+          return
+        }
+
+        setSelectedCar({
+          id: car._id ?? id,
+          name: `${car.make ?? ''} ${car.model ?? ''}`.trim() || 'Unknown Car',
+          type: car.type ?? 'General',
+          image: car.image ?? placeholderImageUrl,
+          location: car.location ?? 'Unknown Location',
+          dailyRentPrice: car.dailyRentPrice ?? 0,
+          seats: car.seats ?? 'N/A',
+          rating: car.rating ?? 0,
+          status: car.status ?? 'Available',
+        })
+      } catch (fetchError) {
+        if (fetchError.name !== 'AbortError') {
+          setError(fetchError.message || 'Failed to load car')
+        }
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (id) {
+      loadCar()
+    } else {
+      setLoading(false)
+      setError('Car not found')
+    }
+
+    return () => controller.abort()
+  }, [id])
+
+  if (loading) {
+    return (
+      <div className="rounded-3xl border border-slate-200/70 bg-white p-8 text-center shadow-xl">
+        <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">
+          Loading Car Details
+        </p>
+        <h1 className="mt-3 text-2xl font-semibold text-slate-900">
+          Fetching car information
+        </h1>
+        <p className="mt-2 text-sm text-slate-600">
+          Please wait while we load the selected listing.
+        </p>
+      </div>
+    )
+  }
+
+  if (error) {
     return (
       <div className="rounded-3xl border border-slate-200/70 bg-white p-8 text-center shadow-xl">
         <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">
           Car not found
         </p>
         <h1 className="mt-3 text-2xl font-semibold text-slate-900">
-          The selected car does not exist
+          {error}
         </h1>
         <p className="mt-2 text-sm text-slate-600">
           Please go back to Explore Cars and choose a valid listing.
@@ -119,7 +196,7 @@ function CarDetails() {
             <img
               src={selectedCar.image}
               alt={selectedCar.name}
-              className="h-[320px] w-full object-cover md:h-[380px]"
+              className="h-80 w-full object-cover md:h-95"
             />
             <div className="absolute left-4 top-4 rounded-full bg-blue-600 px-3 py-1 text-xs font-semibold text-white">
               {selectedCar.type}
@@ -285,7 +362,7 @@ function CarDetails() {
               </div>
               <button
                 type="button"
-                className="w-full rounded-lg bg-gradient-to-r from-blue-600 to-blue-500 px-4 py-3 text-sm font-semibold text-white"
+                className="w-full rounded-lg bg-linear-to-r from-blue-600 to-blue-500 px-4 py-3 text-sm font-semibold text-white"
               >
                 Book Now
               </button>
@@ -307,11 +384,11 @@ function CarDetails() {
         <div className="rounded-3xl border border-slate-200/70 bg-white p-6 shadow-[0_18px_40px_-30px_rgba(15,23,42,0.6)]">
           <h2 className="text-lg font-semibold text-slate-900">About This Car</h2>
           <p className="mt-3 text-sm text-slate-600">
-            The 2023 BMW X5 is a premium SUV that delivers exceptional driving
-            experience. It comes with a powerful engine, advanced safety
-            features, and a luxurious interior with high-end materials. Whether
-            you are planning a family trip or a business journey, the BMW X5
-            ensures comfort, style, and reliability.
+            The {selectedCar.name} is a premium vehicle that delivers an
+            exceptional driving experience. It comes with modern comfort,
+            advanced safety features, and a refined interior. Whether you are
+            planning a family trip or a business journey, this car ensures
+            comfort, style, and reliability.
           </p>
         </div>
         <div className="rounded-3xl border border-slate-200/70 bg-white p-6 shadow-[0_18px_40px_-30px_rgba(15,23,42,0.6)]">
