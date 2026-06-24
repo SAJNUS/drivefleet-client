@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import toast from 'react-hot-toast'
+import useAuth from '../hooks/useAuth.js'
 
 const initialFormData = {
   carName: '',
@@ -16,6 +17,7 @@ const carTypes = ['SUV', 'Sedan', 'Hatchback', 'Luxury', 'Pickup', 'Electric']
 const availabilityOptions = ['Available', 'Unavailable']
 
 function AddCar() {
+  const { user } = useAuth()
   const [formData, setFormData] = useState(initialFormData)
   const [loading, setLoading] = useState(false)
 
@@ -59,7 +61,7 @@ function AddCar() {
     return true
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
 
     if (!validateForm()) {
@@ -77,12 +79,31 @@ function AddCar() {
       pickupLocation: formData.pickupLocation.trim(),
       description: formData.description.trim(),
       availabilityStatus: formData.availabilityStatus,
+      ownerEmail: user?.email ?? '',
     }
 
-    console.log('Add Car submission:', carObject)
-    toast.success('Car details are ready and logged to the console.')
-    setFormData(initialFormData)
-    setLoading(false)
+    try {
+      const response = await fetch('http://localhost:5050/cars', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(carObject),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Failed to add car')
+      }
+
+      toast.success('Car listing added successfully!')
+      setFormData(initialFormData)
+    } catch (error) {
+      toast.error(error.message || 'Something went wrong. Please try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -92,8 +113,8 @@ function AddCar() {
           Add Car
         </h1>
         <p className="max-w-2xl text-sm text-slate-600 md:text-base">
-          Create a new car listing with the details below. This form is fully
-          controlled and currently logs the car object to the console.
+          Create a new car listing with the details below. Submitted cars are
+          saved directly to the database.
         </p>
       </div>
 

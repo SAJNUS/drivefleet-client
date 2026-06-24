@@ -1,113 +1,103 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FiAlertTriangle, FiEdit3, FiMapPin, FiTrash2 } from 'react-icons/fi'
 import { Link, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import useAuth from '../hooks/useAuth.js'
 
-const initialCars = [
-  {
-    id: 'car-1',
-    ownerEmail: '',
-    carName: 'Toyota RAV4',
-    dailyRentPrice: 55,
-    carType: 'SUV',
-    imageUrl:
-      'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=900&q=80',
-    seatCapacity: 5,
-    pickupLocation: 'Gulshan, Dhaka',
-    availabilityStatus: 'Active',
-  },
-  {
-    id: 'car-2',
-    ownerEmail: '',
-    carName: 'Honda Civic',
-    dailyRentPrice: 45,
-    carType: 'Sedan',
-    imageUrl:
-      'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=900&q=80',
-    seatCapacity: 5,
-    pickupLocation: 'Banani, Dhaka',
-    availabilityStatus: 'Active',
-  },
-  {
-    id: 'car-3',
-    ownerEmail: '',
-    carName: 'Suzuki Swift',
-    dailyRentPrice: 30,
-    carType: 'Hatchback',
-    imageUrl:
-      'https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=900&q=80',
-    seatCapacity: 4,
-    pickupLocation: 'Dhanmondi, Dhaka',
-    availabilityStatus: 'Active',
-  },
-  {
-    id: 'car-4',
-    ownerEmail: '',
-    carName: 'BMW X5',
-    dailyRentPrice: 85,
-    carType: 'SUV',
-    imageUrl:
-      'https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&w=900&q=80',
-    seatCapacity: 5,
-    pickupLocation: 'Uttara, Dhaka',
-    availabilityStatus: 'Active',
-  },
-  {
-    id: 'car-5',
-    ownerEmail: 'another.owner@example.com',
-    carName: 'Hyundai Elantra',
-    dailyRentPrice: 40,
-    carType: 'Sedan',
-    imageUrl:
-      'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&w=900&q=80',
-    seatCapacity: 5,
-    pickupLocation: 'Khulna',
-    availabilityStatus: 'Inactive',
-  },
-]
-
 function MyAddedCars() {
   const { user } = useAuth()
   const navigate = useNavigate()
-  const [cars, setCars] = useState(initialCars)
+  const [cars, setCars] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
   const [deleteTarget, setDeleteTarget] = useState(null)
+  const [deleting, setDeleting] = useState(false)
 
-  const visibleCars = useMemo(() => {
-    const currentUserEmail = user?.email
+  useEffect(() => {
+    if (!user?.email) return
 
-    return cars.map((car) =>
-      car.ownerEmail === '' && currentUserEmail
-        ? { ...car, ownerEmail: currentUserEmail }
-        : car,
-    )
-  }, [cars, user?.email])
+    const controller = new AbortController()
 
-  const userCars = useMemo(
-    () => visibleCars.filter((car) => car.ownerEmail === user?.email),
-    [user?.email, visibleCars],
-  )
+    async function loadMyCars() {
+      try {
+        setLoading(true)
+        setError('')
 
-  const activeCars = userCars.filter((car) => car.availabilityStatus === 'Active')
-  const inactiveCars = userCars.filter(
-    (car) => car.availabilityStatus === 'Inactive',
-  )
+        const response = await fetch(
+          `http://localhost:5050/cars?email=${encodeURIComponent(user.email)}`,
+          { signal: controller.signal },
+        )
 
-  const totalEarnings = userCars.reduce(
-    (sum, car) => sum + car.dailyRentPrice * 12,
-    0,
-  )
+        if (!response.ok) {
+          throw new Error(`Failed to load your cars (${response.status})`)
+        }
 
-  const handleDelete = () => {
-    if (!deleteTarget) {
-      return
+        const payload = await response.json()
+        setCars(Array.isArray(payload?.data) ? payload.data : [])
+      } catch (fetchError) {
+        if (fetchError.name !== 'AbortError') {
+          setError(fetchError.message || 'Failed to load your cars')
+          setCars([])
+        }
+      } finally {
+        setLoading(false)
+      }
     }
 
-    setCars((currentCars) =>
-      currentCars.filter((car) => car.id !== deleteTarget.id),
+    loadMyCars()
+
+    return () => controller.abort()
+  }, [user?.email])
+
+  const userCars = cars
+  const activeCars = userCars.filter((car) => car.availabilityStatus === 'Available')
+  const inactiveCars = userCars.filter((car) => car.availabilityStatus === 'Unavailable')
+  const totalEarnings = userCars.reduce((sum, car) => sum + (car.dailyRentPrice ?? 0) * 12, 0)
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return
+
+    setDeleting(true)
+    try {
+      const response = await fetch(
+        `http://localhost:5050/cars/${deleteTarget._id}`,
+        { method: 'DELETE' },
+      )
+
+      if (!response.ok) {
+        const result = await response.json()
+        throw new Error(result.message || 'Failed to delete car')
+      }
+
+      setCars((current) => current.filter((car) => car._id !== deleteTarget._id))
+      toast.success(`${deleteTarget.carName} deleted successfully.`)
+      setDeleteTarget(null)
+    } catch (err) {
+      toast.error(err.message || 'Something went wrong. Please try again.')
+    } finally {
+      setDeleting(false)
+    }
+  }
+
+
+  if (loading) {
+    return (
+      <div className="rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+        <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">Loading</p>
+        <h1 className="mt-3 text-2xl font-semibold text-slate-900">Fetching your car listings</h1>
+        <p className="mt-2 text-sm text-slate-600">Please wait while we load your data.</p>
+      </div>
     )
-    toast.success(`${deleteTarget.carName} removed from your list.`)
-    setDeleteTarget(null)
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-3xl border border-rose-200 bg-white p-8 text-center shadow-sm">
+        <p className="text-sm font-semibold uppercase tracking-wide text-rose-600">Error</p>
+        <h1 className="mt-3 text-2xl font-semibold text-slate-900">Unable to load your cars</h1>
+        <p className="mt-2 text-sm text-slate-600">{error}</p>
+      </div>
+    )
   }
 
   return (
@@ -219,7 +209,7 @@ function MyAddedCars() {
           <div className="grid grid-cols-1 gap-4 p-3 md:grid-cols-2 xl:grid-cols-3">
             {userCars.map((car) => (
               <article
-                key={car.id}
+                key={car._id}
                 className="flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md"
               >
                 <div className="relative h-52 overflow-hidden bg-slate-100">
@@ -230,7 +220,7 @@ function MyAddedCars() {
                   />
                   <span
                     className={`absolute left-4 top-4 rounded-full px-3 py-1 text-xs font-semibold shadow-sm ${
-                      car.availabilityStatus === 'Active'
+                      car.availabilityStatus === 'Available'
                         ? 'bg-emerald-100 text-emerald-700'
                         : 'bg-rose-100 text-rose-600'
                     }`}
@@ -273,7 +263,7 @@ function MyAddedCars() {
                         <span>Availability</span>
                         <span
                           className={`font-semibold ${
-                            car.availabilityStatus === 'Active'
+                            car.availabilityStatus === 'Available'
                               ? 'text-emerald-600'
                               : 'text-rose-600'
                           }`}
@@ -285,7 +275,7 @@ function MyAddedCars() {
 
                     <div className="grid grid-cols-2 gap-3">
                       <Link
-                        to={`/update-car/${car.id}`}
+                        to={`/update-car/${car._id}`}
                         className="inline-flex items-center justify-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-semibold text-blue-700 transition hover:bg-blue-100"
                       >
                         <FiEdit3 size={14} />
@@ -345,7 +335,7 @@ function MyAddedCars() {
                   Delete this car?
                 </h3>
                 <p className="text-sm text-slate-600">
-                  {deleteTarget.carName} will be removed from your local list only.
+                  {deleteTarget.carName} will be permanently deleted from the database.
                   This action cannot be undone.
                 </p>
               </div>
@@ -355,9 +345,10 @@ function MyAddedCars() {
               <button
                 type="button"
                 onClick={handleDelete}
-                className="flex-1 rounded-xl bg-rose-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-rose-700"
+                disabled={deleting}
+                className="flex-1 rounded-xl bg-rose-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-70"
               >
-                Confirm Delete
+                {deleting ? 'Deleting...' : 'Confirm Delete'}
               </button>
               <button
                 type="button"

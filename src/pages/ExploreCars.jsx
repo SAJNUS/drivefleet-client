@@ -62,14 +62,14 @@ function ExploreCars() {
     () =>
       cars.map((car) => ({
         id: car._id,
-        name: `${car.make ?? ''} ${car.model ?? ''}`.trim(),
-        type: 'General',
-        image: placeholderImageUrl,
-        location: 'Unknown Location',
-        dailyRentPrice: 0,
-        seats: 'N/A',
-        rating: 0,
-        status: 'Available',
+        name: car.carName ?? '',
+        type: car.carType ?? 'General',
+        image: car.imageUrl || placeholderImageUrl,
+        location: car.pickupLocation ?? 'Unknown Location',
+        dailyRentPrice: car.dailyRentPrice ?? 0,
+        seats: car.seatCapacity ?? 'N/A',
+        rating: car.rating ?? 0,
+        status: car.availabilityStatus ?? 'Available',
       })),
     [cars],
   )
