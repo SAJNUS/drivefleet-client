@@ -8,6 +8,7 @@ function MyAddedCars() {
   const { user } = useAuth()
   const navigate = useNavigate()
   const [cars, setCars] = useState([])
+  const [ownerBookings, setOwnerBookings] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [deleteTarget, setDeleteTarget] = useState(null)
@@ -24,7 +25,9 @@ function MyAddedCars() {
         setError('')
 
         const token = await user.getIdToken()
-        const response = await fetch(
+        
+        // Fetch user's cars
+        const carsResponse = await fetch(
           `http://localhost:5050/cars?email=${encodeURIComponent(user.email)}`,
           {
             signal: controller.signal,
@@ -32,16 +35,32 @@ function MyAddedCars() {
           },
         )
 
-        if (!response.ok) {
-          throw new Error(`Failed to load your cars (${response.status})`)
+        if (!carsResponse.ok) {
+          throw new Error(`Failed to load your cars (${carsResponse.status})`)
         }
 
-        const payload = await response.json()
-        setCars(Array.isArray(payload?.data) ? payload.data : [])
+        const carsPayload = await carsResponse.json()
+        setCars(Array.isArray(carsPayload?.data) ? carsPayload.data : [])
+
+        // Fetch user's car bookings (to calculate total earnings)
+        const bookingsResponse = await fetch(
+          `http://localhost:5050/bookings?ownerEmail=${encodeURIComponent(user.email)}`,
+          {
+            signal: controller.signal,
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        )
+
+        if (bookingsResponse.ok) {
+          const bookingsPayload = await bookingsResponse.json()
+          setOwnerBookings(Array.isArray(bookingsPayload?.data) ? bookingsPayload.data : [])
+        }
+
       } catch (fetchError) {
         if (fetchError.name !== 'AbortError') {
           setError(fetchError.message || 'Failed to load your cars')
           setCars([])
+          setOwnerBookings([])
         }
       } finally {
         setLoading(false)
@@ -56,7 +75,11 @@ function MyAddedCars() {
   const userCars = cars
   const activeCars = userCars.filter((car) => car.availabilityStatus === 'Available')
   const inactiveCars = userCars.filter((car) => car.availabilityStatus === 'Unavailable')
-  const totalEarnings = userCars.reduce((sum, car) => sum + (car.dailyRentPrice ?? 0) * 12, 0)
+  
+  // Real calculation based on completed bookings
+  const totalEarnings = ownerBookings
+    .filter((booking) => booking.bookingStatus === 'Completed')
+    .reduce((sum, booking) => sum + (booking.totalCost ?? 0), 0)
 
   const handleDelete = async () => {
     if (!deleteTarget) return
