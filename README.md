@@ -3,7 +3,7 @@
 DriveFleet is a modern, full-stack car rental platform that connects car owners with renters. It offers a seamless experience for users to explore, book, and manage vehicle rentals, complete with real-time notifications, integrated authentication, and an earnings dashboard for car owners.
 
 ## Live Website
-**🔗 [Visit DriveFleet Live](https://drivefleet-client-wine.vercel.app/)**
+**🔗 [DriveFleet](https://drivefleet-client-wine.vercel.app/)**
 
 ## Key Features
 - **Secure Authentication**: Integrated Firebase authentication with Google login and custom email/password, paired with JWT verification via HTTP-only cookies.
