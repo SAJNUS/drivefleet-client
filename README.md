@@ -1,4 +1,4 @@
-# DriveFleet 🚘
+# DriveFleet
 
 DriveFleet is a modern, full-stack car rental platform that connects car owners with renters. It offers a seamless experience for users to explore, book, and manage vehicle rentals, complete with real-time notifications, integrated authentication, and an earnings dashboard for car owners.
 
@@ -53,22 +53,18 @@ DriveFleet is a modern, full-stack car rental platform that connects car owners 
 - Node.js (v16+ recommended)
 - MongoDB running locally or a MongoDB Atlas URI
 
-### 1. Clone the Repository
+### 1. Clone the Client Repository
 ```bash
 git clone https://github.com/SAJNUS/drivefleet-client.git
-cd drivefleet
-```
-
-### 2. Setup the Backend
-```bash
-cd drivefleet-server
+cd drivefleet-client
 npm install
 npm run dev
 ```
 
-### 3. Setup the Frontend
+### 2. Setup the Backend Repository (Separate)
 ```bash
-cd ../drivefleet-client
+git clone https://github.com/SAJNUS/drivefleet-server.git
+cd drivefleet-server
 npm install
 npm run dev
 ```
@@ -77,11 +73,11 @@ The frontend will run on `http://localhost:5173` and the backend will run on `ht
 
 ## Environment Variables
 
-Create a `.env` file in both the client and server directories with the following structure:
+Create a `.env.local` file in the root of the client directory:
 
-### Client (`drivefleet-client/.env.local`)
+### Client (`.env.local`)
 ```env
-VITE_FIREBASE_API_KEY=your_firebase_api_key 
+VITE_FIREBASE_API_KEY=your_firebase_api_key
 VITE_FIREBASE_AUTH_DOMAIN=your_firebase_auth_domain
 VITE_FIREBASE_PROJECT_ID=your_firebase_project_id
 VITE_FIREBASE_STORAGE_BUCKET=your_firebase_storage_bucket
@@ -89,10 +85,12 @@ VITE_FIREBASE_MESSAGING_SENDER_ID=your_firebase_messaging_sender_id
 VITE_FIREBASE_APP_ID=your_firebase_app_id
 ```
 
-### Server (`drivefleet-server/.env`)
+If setting up the backend locally, create a `.env` file in the server directory:
+
+### Server (`.env`)
 ```env
 PORT=5050
-MONGODB_URI=your_mongodb_connection_string
+MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret_key
 FRONTEND_URL=http://localhost:5173
 ```
@@ -100,26 +98,18 @@ FRONTEND_URL=http://localhost:5173
 ## Folder Structure
 
 ```text
-drivefleet/
-├── drivefleet-client/          # React Frontend Environment
-│   ├── public/                 # Static assets
-│   ├── src/
-│   │   ├── components/         # Reusable UI components
-│   │   ├── context/            # Global state/Context (Auth)
-│   │   ├── hooks/              # Custom React hooks
-│   │   ├── pages/              # Route pages (Home, Profile, etc.)
-│   │   └── firebase/           # Firebase initialization
-│   └── package.json
-│
-└── drivefleet-server/          # Node.js/Express Backend Environment
-    ├── config/                 # DB and Socket configurations
-    ├── collections/            # MongoDB collection references
-    ├── controllers/            # Route business logic
-    ├── middleware/             # JWT and Auth verifications
-    ├── routes/                 # Express API routes
-    ├── services/               # Reusable backend functions
-    ├── server.js               # Application entry point
-    └── package.json
+drivefleet-client/              # React Frontend Repository
+├── public/                     # Static assets
+├── src/
+│   ├── components/             # Reusable UI components
+│   ├── context/                # Global state/Context (Auth)
+│   ├── hooks/                  # Custom React hooks
+│   ├── pages/                  # Route pages (Home, Profile, etc.)
+│   └── firebase/               # Firebase initialization
+├── .env.local                  # Environment variables
+├── index.html                  # HTML entry point
+├── package.json                # Project metadata and dependencies
+└── vite.config.js              # Vite configuration
 ```
 
 ## Future Improvements
@@ -131,4 +121,4 @@ drivefleet/
 ## Author
 **Sajnus Saharear Hojayfa**
 - Full-Stack Developer
-- GitHub: [sajnus](https://github.com/sajnus)
+- GitHub: [SAJNUS](https://github.com/SAJNUS)
