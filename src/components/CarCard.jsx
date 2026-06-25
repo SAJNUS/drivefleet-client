@@ -1,7 +1,7 @@
 import { FiMapPin, FiStar, FiUsers } from 'react-icons/fi'
 import { Link } from 'react-router-dom'
 
-const carTagStyles = {
+export const carTagStyles = {
   SUV: 'bg-blue-600 text-white',
   Sedan: 'bg-emerald-600 text-white',
   Hatchback: 'bg-amber-500 text-white',
@@ -41,7 +41,6 @@ function CarCard({ car, variant = 'explore' }) {
           <h3 className={variant === 'home' ? 'text-lg font-semibold text-slate-900' : 'text-base font-semibold text-slate-900'}>
             {car.name}
           </h3>
-          <p className="text-xs text-slate-500">{car.location}</p>
         </div>
 
         <div className="flex items-center justify-between text-sm text-slate-600">
@@ -69,7 +68,7 @@ function CarCard({ car, variant = 'explore' }) {
 
         {variant === 'explore' ? (
           <div className="flex items-center justify-between">
-            <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-600">
+            <span className={`rounded-full px-3 py-1 text-xs font-semibold ${car.status === 'Available' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
               {car.status}
             </span>
             <Link

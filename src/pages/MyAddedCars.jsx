@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
-import { FiAlertTriangle, FiEdit3, FiMapPin, FiTrash2 } from 'react-icons/fi'
+import { FiAlertTriangle, FiEdit3, FiMapPin, FiTrash2, FiStar, FiUsers } from 'react-icons/fi'
 import { Link, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import useAuth from '../hooks/useAuth.js'
+import { carTagStyles } from '../components/CarCard.jsx'
 
 function MyAddedCars() {
   const { user } = useAuth()
@@ -13,6 +14,8 @@ function MyAddedCars() {
   const [error, setError] = useState('')
   const [deleteTarget, setDeleteTarget] = useState(null)
   const [deleting, setDeleting] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [sortOption, setSortOption] = useState('newest')
 
   useEffect(() => {
     if (!user?.email) return
@@ -76,10 +79,32 @@ function MyAddedCars() {
   const activeCars = userCars.filter((car) => car.availabilityStatus === 'Available')
   const inactiveCars = userCars.filter((car) => car.availabilityStatus === 'Unavailable')
   
-  // Real calculation based on completed bookings
   const totalEarnings = ownerBookings
     .filter((booking) => booking.bookingStatus === 'Completed')
     .reduce((sum, booking) => sum + (booking.totalCost ?? 0), 0)
+
+  // Filter and Sort
+  let processedCars = [...userCars]
+
+  if (searchQuery.trim()) {
+    const q = searchQuery.toLowerCase()
+    processedCars = processedCars.filter((car) =>
+      car.carName?.toLowerCase().includes(q) ||
+      car.carType?.toLowerCase().includes(q)
+    )
+  }
+
+  processedCars.sort((a, b) => {
+    if (sortOption === 'price_low') return (a.dailyRentPrice || 0) - (b.dailyRentPrice || 0)
+    if (sortOption === 'price_high') return (b.dailyRentPrice || 0) - (a.dailyRentPrice || 0)
+    
+    // Sort by MongoDB ObjectId timestamp (first 8 hex chars)
+    const timeA = a._id ? parseInt(a._id.substring(0, 8), 16) : 0
+    const timeB = b._id ? parseInt(b._id.substring(0, 8), 16) : 0
+    
+    if (sortOption === 'oldest') return timeA - timeB
+    return timeB - timeA // newest first
+  })
 
   const handleDelete = async () => {
     if (!deleteTarget) return
@@ -208,8 +233,14 @@ function MyAddedCars() {
       <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm md:p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <div className="flex w-full items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500 sm:w-[300px]">
-              <span className="text-slate-400">Search by car name or model...</span>
+            <div className="flex w-full items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500 sm:w-[300px] focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 transition">
+              <input 
+                type="text" 
+                placeholder="Search by car name or type..." 
+                className="w-full bg-transparent outline-none placeholder:text-slate-400 text-slate-800"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
             </div>
             <button
               type="button"
@@ -221,10 +252,15 @@ function MyAddedCars() {
 
           <div className="flex items-center gap-3">
             <label className="text-sm font-medium text-slate-500">Sort by:</label>
-            <select className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none">
-              <option>Newest First</option>
-              <option>Oldest First</option>
-              <option>Price: Low to High</option>
+            <select 
+              className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              value={sortOption}
+              onChange={(e) => setSortOption(e.target.value)}
+            >
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+              <option value="price_low">Price: Low to High</option>
+              <option value="price_high">Price: High to Low</option>
             </select>
             <button
               type="button"
@@ -239,7 +275,7 @@ function MyAddedCars() {
 
         <div className="mt-5 overflow-hidden rounded-2xl border border-slate-200">
           <div className="grid grid-cols-1 gap-4 p-3 md:grid-cols-2 xl:grid-cols-3">
-            {userCars.map((car) => (
+            {processedCars.map((car) => (
               <article
                 key={car._id}
                 className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md"
@@ -264,51 +300,42 @@ function MyAddedCars() {
                   </span>
                 </div>
 
-                <div className="flex flex-1 flex-col p-5">
-                  <div className="space-y-1">
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <h2 className="text-lg font-semibold text-slate-900">
-                          {car.carName}
-                        </h2>
-                        <p className="text-sm text-slate-500">{car.carType}</p>
-                      </div>
-                      <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
-                        {car.seatCapacity} Seats
-                      </span>
-                    </div>
-
-                    <div className="flex items-baseline gap-1 text-xl text-blue-600">
-                      <span className="font-normal">BDT</span>
-                      <span className="font-bold">{car.dailyRentPrice}</span>
-                      <span className="text-sm font-medium text-slate-500">/day</span>
-                    </div>
+                <div className="flex flex-1 flex-col gap-3 p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <h3 className="text-base font-semibold text-slate-900 line-clamp-1">
+                      {car.carName}
+                    </h3>
+                    <span
+                      className={`shrink-0 rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide shadow-sm ${
+                        carTagStyles[car.carType] || 'bg-slate-600 text-white'
+                      }`}
+                    >
+                      {car.carType}
+                    </span>
                   </div>
 
-                  <div className="mt-5 flex flex-1 flex-col justify-between gap-5">
-                    <div className="space-y-3 text-sm text-slate-600">
-                      <div className="flex items-center gap-2">
-                        <FiMapPin className="text-slate-400" />
-                        <span>{car.pickupLocation}</span>
-                      </div>
-                      <div className="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3 text-xs font-medium text-slate-500">
-                        <span>Car Type</span>
-                        <span className="text-slate-900">{car.carType}</span>
-                      </div>
-                      <div className="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3 text-xs font-medium text-slate-500">
-                        <span>Availability</span>
-                        <span
-                          className={`font-semibold ${
-                            car.availabilityStatus === 'Available'
-                              ? 'text-emerald-600'
-                              : 'text-rose-600'
-                          }`}
-                        >
-                          {car.availabilityStatus}
-                        </span>
-                      </div>
+                  <div className="flex items-center justify-between text-sm text-slate-600">
+                    <div className="flex items-baseline gap-1 text-sm text-blue-600">
+                      <span className="font-normal">BDT</span>
+                      <span className="font-bold">{car.dailyRentPrice}</span>
+                      <span className="text-[10px] font-medium text-slate-500">/day</span>
                     </div>
+                    <span className="flex items-center gap-1 text-xs">
+                      <FiUsers size={14} /> {car.seatCapacity}
+                    </span>
+                  </div>
 
+                  <div className="flex items-center justify-between text-xs text-slate-500">
+                    <span className="flex items-center gap-1">
+                      <FiMapPin size={14} /> {car.pickupLocation}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <FiStar size={14} className="text-amber-500" />
+                      {car.rating || 0}
+                    </span>
+                  </div>
+
+                  <div className="mt-auto pt-3">
                     <div className="grid grid-cols-2 gap-3">
                       <Link
                         to={`/update-car/${car._id}`}
@@ -332,6 +359,24 @@ function MyAddedCars() {
             ))}
           </div>
 
+          {processedCars.length === 0 && userCars.length > 0 && (
+            <div className="border-t border-slate-200 px-6 py-16 text-center">
+              <h3 className="text-lg font-semibold text-slate-900">
+                No cars match your search
+              </h3>
+              <p className="mt-2 text-sm text-slate-500">
+                Try adjusting your search or filter criteria.
+              </p>
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="mt-6 rounded-xl bg-slate-100 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-200"
+              >
+                Clear Search
+              </button>
+            </div>
+          )}
+
           {userCars.length === 0 && (
             <div className="border-t border-slate-200 px-6 py-16 text-center">
               <h3 className="text-lg font-semibold text-slate-900">
@@ -353,7 +398,7 @@ function MyAddedCars() {
 
         <div className="mt-4 flex items-center justify-between text-xs text-slate-500">
           <p>
-            Showing {userCars.length} of {cars.length} cars
+            Showing {processedCars.length} of {cars.length} cars
           </p>
           <p>Use the actions above to manage your listings</p>
         </div>

@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import {
   FiCalendar,
   FiCheckCircle,
@@ -14,6 +14,7 @@ import {
 } from 'react-icons/fi'
 import toast from 'react-hot-toast'
 import useAuth from '../hooks/useAuth.js'
+import { carTagStyles } from '../components/CarCard.jsx'
 
 const API_BASE = 'http://localhost:5050'
 const placeholderImageUrl = 'https://placehold.co/1200x800?text=Car+Image'
@@ -51,6 +52,7 @@ function CarDetails() {
   const { user } = useAuth()
 
   const [selectedCar, setSelectedCar] = useState(null)
+  const [recommendations, setRecommendations] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -109,6 +111,24 @@ function CarDetails() {
           modelYear: car.modelYear ?? null,
           ownerEmail: car.ownerEmail ?? null,
         })
+        
+        // Fetch recommendations in the background
+        fetch(`${API_BASE}/cars`, { signal: controller.signal })
+          .then((res) => res.json())
+          .then((data) => {
+            let all = Array.isArray(data?.data) ? data.data : []
+            // Exclude current car
+            all = all.filter((c) => c._id !== (car._id ?? id))
+            // Sort by matching type first
+            all.sort((a, b) => {
+              const aSame = a.carType === car.carType ? 1 : 0
+              const bSame = b.carType === car.carType ? 1 : 0
+              return bSame - aSame
+            })
+            setRecommendations(all.slice(0, 4))
+          })
+          .catch(() => {}) // Ignore fetch errors for recommendations
+
       } catch (fetchError) {
         if (fetchError.name !== 'AbortError') {
           setError(fetchError.message || 'Failed to load car')
@@ -256,7 +276,14 @@ function CarDetails() {
         <div className="space-y-4">
 
           {/* Car image */}
-          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <span
+              className={`absolute left-4 top-4 z-10 rounded-lg px-3 py-1.5 text-xs font-semibold tracking-wide shadow-sm opacity-90 ${
+                carTagStyles[selectedCar.type] || 'bg-slate-600 text-white'
+              }`}
+            >
+              {selectedCar.type}
+            </span>
             <img
               src={selectedCar.image}
               alt={selectedCar.name}
@@ -484,43 +511,43 @@ function CarDetails() {
       </motion.section>
 
       {/* ── Cars You May Like ─────────────────────────────────────────────────── */}
-      <motion.section
-        variants={sectionVariant}
-        initial="hidden"
-        whileInView="show"
-        viewport={{ once: true, amount: 0.1 }}
-        className="space-y-4"
-      >
-        <h2 className="text-lg font-bold text-slate-900">Cars You May Like</h2>
-        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-          {[0, 1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
-            >
-              <div className="flex h-28 items-center justify-center rounded-xl bg-slate-100">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-10 w-10 text-slate-300"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={1.2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M9 17a2 2 0 11-4 0 2 2 0 014 0zm10 0a2 2 0 11-4 0 2 2 0 014 0zM3 12l2-5h14l2 5M3 12h18"
+      {recommendations.length > 0 && (
+        <motion.section
+          variants={sectionVariant}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.1 }}
+          className="space-y-4"
+        >
+          <h2 className="text-lg font-bold text-slate-900">Cars You May Like</h2>
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+            {recommendations.map((rec) => (
+              <Link
+                key={rec._id}
+                to={`/car-details/${rec._id}`}
+                className="group block rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-blue-200 hover:shadow-md"
+              >
+                <div className="flex h-28 overflow-hidden items-center justify-center rounded-xl bg-slate-100">
+                  <img 
+                    src={rec.imageUrl} 
+                    alt={rec.carName} 
+                    className="h-full w-full object-cover transition duration-300 group-hover:scale-105" 
+                    onError={(e) => { e.currentTarget.src = placeholderImageUrl }} 
                   />
-                </svg>
-              </div>
-              <p className="mt-3 text-center text-xs text-slate-400">
-                Coming soon
-              </p>
-            </div>
-          ))}
-        </div>
-      </motion.section>
+                </div>
+                <div className="mt-3 text-center">
+                  <h3 className="truncate text-sm font-semibold text-slate-900 group-hover:text-blue-600">
+                    {rec.carName}
+                  </h3>
+                  <p className="mt-0.5 text-xs font-medium text-slate-500">
+                    BDT {rec.dailyRentPrice}/day
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </motion.section>
+      )}
 
     </div>
   )
