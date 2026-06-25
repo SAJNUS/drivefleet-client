@@ -30,9 +30,8 @@ function StatusBadge({ status }) {
   }
   return (
     <span
-      className={`rounded-full px-3 py-1 text-xs font-semibold ${
-        colourMap[status] ?? 'bg-slate-100 text-slate-600'
-      }`}
+      className={`rounded-full px-3 py-1 text-xs font-semibold ${colourMap[status] ?? 'bg-slate-100 text-slate-600'
+        }`}
     >
       {status}
     </span>
