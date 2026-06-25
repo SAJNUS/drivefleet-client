@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { FiAlertTriangle, FiEdit3, FiMapPin, FiTrash2, FiStar, FiUsers } from 'react-icons/fi'
+import { FiAlertTriangle, FiEdit3, FiMapPin, FiTrash2, FiStar, FiGrid, FiCheckCircle, FiClock, FiUsers } from 'react-icons/fi'
 import { Link, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import useAuth from '../hooks/useAuth.js'
@@ -170,8 +170,8 @@ function MyAddedCars() {
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-2xl text-blue-600">
-              🚘
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
+              <FiGrid size={22} />
             </div>
             <div>
               <p className="text-sm text-slate-500">Total Cars</p>
@@ -185,8 +185,8 @@ function MyAddedCars() {
 
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-2xl text-emerald-600">
-              ✅
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
+              <FiCheckCircle size={22} />
             </div>
             <div>
               <p className="text-sm text-slate-500">Active Cars</p>
@@ -200,8 +200,8 @@ function MyAddedCars() {
 
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 text-2xl text-amber-600">
-              ⏱️
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-50 text-rose-600">
+              <FiClock size={22} />
             </div>
             <div>
               <p className="text-sm text-slate-500">Inactive Cars</p>
@@ -215,7 +215,7 @@ function MyAddedCars() {
 
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-50 text-2xl text-violet-600">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 text-2xl text-amber-600">
               ৳
             </div>
             <div>

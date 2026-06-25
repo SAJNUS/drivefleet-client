@@ -270,8 +270,8 @@ function MyBookings() {
 
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 text-amber-600">
-              <FiCreditCard size={22} />
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 text-2xl text-amber-600">
+              ৳
             </div>
             <div>
               <p className="text-sm text-slate-500">Total Spent</p>
