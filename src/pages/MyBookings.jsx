@@ -9,6 +9,7 @@ import {
   FiCheckCircle,
   FiCreditCard,
   FiX,
+  FiStar,
 } from 'react-icons/fi'
 import toast from 'react-hot-toast'
 import useAuth from '../hooks/useAuth.js'
@@ -52,6 +53,8 @@ function MyBookings() {
 
   const [completeTarget, setCompleteTarget] = useState(null)
   const [completing, setCompleting] = useState(false)
+  const [selectedRating, setSelectedRating] = useState(0)
+  const [hoveredRating, setHoveredRating] = useState(0)
 
   // ── Fetch all bookings for the logged-in user ─────────────────────────────
   useEffect(() => {
@@ -126,7 +129,11 @@ function MyBookings() {
       const token = await user.getIdToken()
       const response = await fetch(`${API_BASE}/${completeTarget._id}/complete`, {
         method: 'PATCH',
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ rating: selectedRating > 0 ? selectedRating : null })
       })
 
       if (!response.ok) {
@@ -141,6 +148,8 @@ function MyBookings() {
       )
       toast.success('Trip marked as completed successfully.')
       setCompleteTarget(null)
+      setSelectedRating(0)
+      setHoveredRating(0)
     } catch (err) {
       toast.error(err.message || 'Something went wrong.')
     } finally {
@@ -527,7 +536,7 @@ function MyBookings() {
         </div>
       )}
 
-      {/* ── Complete confirmation modal ── */}
+      {/* ── Complete confirmation & Rating modal ── */}
       {completeTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 px-4">
           <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
@@ -537,34 +546,68 @@ function MyBookings() {
               </div>
               <div className="space-y-1">
                 <h3 className="text-lg font-semibold text-slate-900">
-                  Complete this trip?
+                  Rate your trip
                 </h3>
                 <p className="text-sm text-slate-500">
-                  Are you sure you want to mark your trip with{' '}
+                  How was your experience with the{' '}
                   <span className="font-semibold text-slate-800">
                     {completeTarget.carName}
-                  </span>{' '}
-                  as completed?
+                  </span>?
                 </p>
               </div>
             </div>
 
-            <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-6 flex justify-center gap-2">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  type="button"
+                  onMouseEnter={() => setHoveredRating(star)}
+                  onMouseLeave={() => setHoveredRating(0)}
+                  onClick={() => setSelectedRating(star)}
+                  className="transition-transform hover:scale-110 focus:outline-none"
+                >
+                  <FiStar
+                    size={32}
+                    className={`transition-colors ${
+                      (hoveredRating || selectedRating) >= star
+                        ? 'fill-amber-400 text-amber-400'
+                        : 'text-slate-200'
+                    }`}
+                  />
+                </button>
+              ))}
+            </div>
+
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <button
+                type="button"
+                onClick={handleCompleteTrip}
+                disabled={completing || selectedRating === 0}
+                className="flex-1 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:opacity-60"
+              >
+                {completing ? 'Submitting…' : 'Submit'}
+              </button>
               <button
                 type="button"
                 onClick={handleCompleteTrip}
                 disabled={completing}
-                className="flex-1 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:opacity-60"
-              >
-                {completing ? 'Completing…' : 'Confirm Complete'}
-              </button>
-              <button
-                type="button"
-                onClick={() => setCompleteTarget(null)}
-                disabled={completing}
                 className="flex-1 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
               >
-                Go Back
+                Skip Rating
+              </button>
+            </div>
+            <div className="mt-3 text-center">
+              <button
+                type="button"
+                onClick={() => {
+                  setCompleteTarget(null)
+                  setSelectedRating(0)
+                  setHoveredRating(0)
+                }}
+                className="text-xs text-slate-400 hover:text-slate-600"
+              >
+                Cancel and go back
               </button>
             </div>
           </div>
