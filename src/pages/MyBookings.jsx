@@ -10,6 +10,8 @@ import {
   FiCreditCard,
   FiX,
   FiStar,
+  FiUser,
+  FiMessageSquare,
 } from 'react-icons/fi'
 import toast from 'react-hot-toast'
 import useAuth from '../hooks/useAuth.js'
@@ -56,6 +58,7 @@ function MyBookings() {
   const [completing, setCompleting] = useState(false)
   const [selectedRating, setSelectedRating] = useState(0)
   const [hoveredRating, setHoveredRating] = useState(0)
+  const [openNoteId, setOpenNoteId] = useState(null)
 
   // ── Fetch all bookings for the logged-in user ─────────────────────────────
   useEffect(() => {
@@ -323,7 +326,7 @@ function MyBookings() {
               {bookings.map((booking) => (
                 <tr key={booking._id} className="align-middle">
                   <td className="px-5 py-4">
-                    <div className="flex items-center justify-center gap-3">
+                    <div className="flex items-center justify-start gap-3">
                       <img
                         src={booking.carImage}
                         alt={booking.carName}
@@ -348,16 +351,59 @@ function MyBookings() {
                     <span>{formatDate(booking.endDate)}</span>
                   </td>
                   <td className="px-5 py-4 text-center">
-                    <div className="flex flex-col items-center gap-1.5">
-                      <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
-                        Driver: {booking.driverNeeded ? 'Yes' : 'No'}
-                      </span>
-                      <span 
-                        className="max-w-[140px] truncate text-xs italic text-slate-400"
-                        title={booking.specialNote || 'N/A'}
+                    <div className="flex items-center justify-center gap-3">
+                      {/* Driver Icon */}
+                      <div 
+                        className={`tooltip flex items-center justify-center ${booking.driverNeeded ? 'text-emerald-500' : 'text-slate-300'}`} 
+                        data-tip={booking.driverNeeded ? 'Driver required' : 'No driver required'}
                       >
-                        Note: {booking.specialNote || 'N/A'}
-                      </span>
+                        <FiUser size={18} />
+                      </div>
+
+                      {/* Note Icon */}
+                      {booking.specialNote ? (
+                        <div className="relative">
+                          <button 
+                            type="button" 
+                            className="flex items-center justify-center text-emerald-500 hover:text-emerald-600 transition"
+                            onClick={() => setOpenNoteId(openNoteId === booking._id ? null : booking._id)}
+                          >
+                            <FiMessageSquare size={18} />
+                          </button>
+                          {openNoteId === booking._id && (
+                            <>
+                              <div 
+                                className="fixed inset-0 z-[40]" 
+                                onClick={() => setOpenNoteId(null)}
+                              />
+                              <div 
+                                className="absolute right-0 top-full z-[50] mt-2 w-52 rounded-xl border border-slate-100 bg-white p-3 shadow-lg text-left cursor-auto"
+                              >
+                                <div className="flex items-center justify-between mb-1.5">
+                                  <span className="font-semibold text-slate-800 text-xs">Special Note</span>
+                                  <button 
+                                    type="button"
+                                    className="text-slate-400 hover:text-slate-600 transition"
+                                    onClick={() => setOpenNoteId(null)}
+                                  >
+                                    <FiX size={14} />
+                                  </button>
+                                </div>
+                                <p className="text-slate-600 leading-relaxed text-xs break-words">
+                                  {booking.specialNote}
+                                </p>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      ) : (
+                        <div 
+                          className="tooltip flex items-center justify-center text-slate-300" 
+                          data-tip="No special note"
+                        >
+                          <FiMessageSquare size={18} />
+                        </div>
+                      )}
                     </div>
                   </td>
                   <td className="px-5 py-4 text-center text-sm text-blue-600">
@@ -451,10 +497,58 @@ function MyBookings() {
                       </p>
                     </div>
                     <div className="rounded-lg bg-white px-3 py-2">
-                      <p className="text-slate-400">Driver Needed</p>
-                      <p className="font-medium text-slate-800">
-                        {booking.driverNeeded ? 'Yes' : 'No'}
-                      </p>
+                      <p className="text-slate-400 mb-1">Details</p>
+                      <div className="flex items-center gap-3">
+                        <div 
+                          className={booking.driverNeeded ? 'text-emerald-500' : 'text-slate-300'} 
+                          title={booking.driverNeeded ? 'Driver required' : 'No driver required'}
+                        >
+                          <FiUser size={16} />
+                        </div>
+                        {booking.specialNote ? (
+                          <div className="relative">
+                            <button 
+                              type="button" 
+                              className="text-emerald-500 hover:text-emerald-600 transition"
+                              onClick={() => setOpenNoteId(openNoteId === booking._id ? null : booking._id)}
+                            >
+                              <FiMessageSquare size={16} />
+                            </button>
+                            {openNoteId === booking._id && (
+                              <>
+                                <div 
+                                  className="fixed inset-0 z-[40]" 
+                                  onClick={() => setOpenNoteId(null)}
+                                />
+                                <div 
+                                  className="absolute right-0 top-full sm:bottom-full sm:top-auto z-[50] mt-2 sm:mt-0 sm:mb-2 w-52 rounded-xl border border-slate-100 bg-white p-3 shadow-lg text-left cursor-auto"
+                                >
+                                  <div className="flex items-center justify-between mb-1.5">
+                                    <span className="font-semibold text-slate-800 text-xs">Special Note</span>
+                                    <button 
+                                      type="button"
+                                      className="text-slate-400 hover:text-slate-600 transition"
+                                      onClick={() => setOpenNoteId(null)}
+                                    >
+                                      <FiX size={14} />
+                                    </button>
+                                  </div>
+                                  <p className="text-slate-600 leading-relaxed text-xs break-words">
+                                    {booking.specialNote}
+                                  </p>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        ) : (
+                          <div 
+                            className="text-slate-300" 
+                            title="No special note"
+                          >
+                            <FiMessageSquare size={16} />
+                          </div>
+                        )}
+                      </div>
                     </div>
                     <div className="rounded-lg bg-white px-3 py-2">
                       <p className="text-slate-400">Total Cost</p>
@@ -463,13 +557,6 @@ function MyBookings() {
                         <span className="font-bold">{booking.totalCost?.toLocaleString() ?? '—'}</span>
                       </div>
                     </div>
-                  </div>
-
-                  <div className="mt-3 rounded-lg bg-white px-3 py-2 text-xs border border-slate-100">
-                    <p className="text-slate-400 font-medium mb-1">Special Note</p>
-                    <p className="text-slate-600 italic leading-relaxed">
-                      {booking.specialNote || 'N/A'}
-                    </p>
                   </div>
 
                   {booking.bookingStatus === 'Upcoming' && (
@@ -587,11 +674,10 @@ function MyBookings() {
                 >
                   <FiStar
                     size={32}
-                    className={`transition-colors ${
-                      (hoveredRating || selectedRating) >= star
+                    className={`transition-colors ${(hoveredRating || selectedRating) >= star
                         ? 'fill-amber-400 text-amber-400'
                         : 'text-slate-200'
-                    }`}
+                      }`}
                   />
                 </button>
               ))}
