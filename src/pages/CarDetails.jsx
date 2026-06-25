@@ -60,6 +60,8 @@ function CarDetails() {
   // Booking form state
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
+  const [driverNeeded, setDriverNeeded] = useState(false)
+  const [specialNote, setSpecialNote] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
   // Live cost calculation
@@ -194,6 +196,8 @@ function CarDetails() {
       endDate,
       totalCost,
       bookingStatus: 'Upcoming',
+      driverNeeded,
+      specialNote,
     }
 
     try {
@@ -470,6 +474,50 @@ function CarDetails() {
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
                   className="mt-1.5 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-700 outline-none focus:border-blue-400"
+                />
+              </div>
+
+              {/* Driver Needed */}
+              <div>
+                <label className="text-xs font-semibold text-slate-500">
+                  Driver Needed?
+                </label>
+                <div className="mt-1.5 flex items-center gap-4 text-sm text-slate-700">
+                  <label className="flex items-center gap-1.5 cursor-pointer">
+                    <input 
+                      type="radio" 
+                      name="driverNeeded" 
+                      checked={driverNeeded === true}
+                      onChange={() => setDriverNeeded(true)}
+                      className="text-blue-600 focus:ring-blue-500"
+                    />
+                    Yes
+                  </label>
+                  <label className="flex items-center gap-1.5 cursor-pointer">
+                    <input 
+                      type="radio" 
+                      name="driverNeeded" 
+                      checked={driverNeeded === false}
+                      onChange={() => setDriverNeeded(false)}
+                      className="text-blue-600 focus:ring-blue-500"
+                    />
+                    No
+                  </label>
+                </div>
+              </div>
+
+              {/* Special Note */}
+              <div>
+                <label htmlFor="specialNote" className="text-xs font-semibold text-slate-500">
+                  Special Note (Optional)
+                </label>
+                <textarea
+                  id="specialNote"
+                  rows="2"
+                  value={specialNote}
+                  onChange={(e) => setSpecialNote(e.target.value)}
+                  placeholder="Any special requests..."
+                  className="mt-1.5 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 outline-none focus:border-blue-400 resize-none"
                 />
               </div>
 

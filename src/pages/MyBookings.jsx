@@ -313,7 +313,7 @@ function MyBookings() {
               <tr className="text-center text-xs font-semibold uppercase tracking-wide text-slate-400">
                 <th className="px-5 py-3">Car</th>
                 <th className="px-5 py-3">Rental Period</th>
-                <th className="px-5 py-3">Booked On</th>
+                <th className="px-5 py-3">Details</th>
                 <th className="px-5 py-3">Total Cost</th>
                 <th className="px-5 py-3">Status</th>
                 <th className="px-5 py-3">Actions</th>
@@ -347,8 +347,18 @@ function MyBookings() {
                     <span className="mx-1 text-slate-300">→</span>
                     <span>{formatDate(booking.endDate)}</span>
                   </td>
-                  <td className="px-5 py-4 text-center text-sm text-slate-500">
-                    {formatDate(booking.bookingDate)}
+                  <td className="px-5 py-4 text-center">
+                    <div className="flex flex-col items-center gap-1.5">
+                      <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
+                        Driver: {booking.driverNeeded ? 'Yes' : 'No'}
+                      </span>
+                      <span 
+                        className="max-w-[140px] truncate text-xs italic text-slate-400"
+                        title={booking.specialNote || 'N/A'}
+                      >
+                        Note: {booking.specialNote || 'N/A'}
+                      </span>
+                    </div>
                   </td>
                   <td className="px-5 py-4 text-center text-sm text-blue-600">
                     <span className="font-normal mr-1">BDT</span>
@@ -441,9 +451,9 @@ function MyBookings() {
                       </p>
                     </div>
                     <div className="rounded-lg bg-white px-3 py-2">
-                      <p className="text-slate-400">Booked on</p>
+                      <p className="text-slate-400">Driver Needed</p>
                       <p className="font-medium text-slate-800">
-                        {formatDate(booking.bookingDate)}
+                        {booking.driverNeeded ? 'Yes' : 'No'}
                       </p>
                     </div>
                     <div className="rounded-lg bg-white px-3 py-2">
@@ -453,6 +463,13 @@ function MyBookings() {
                         <span className="font-bold">{booking.totalCost?.toLocaleString() ?? '—'}</span>
                       </div>
                     </div>
+                  </div>
+
+                  <div className="mt-3 rounded-lg bg-white px-3 py-2 text-xs border border-slate-100">
+                    <p className="text-slate-400 font-medium mb-1">Special Note</p>
+                    <p className="text-slate-600 italic leading-relaxed">
+                      {booking.specialNote || 'N/A'}
+                    </p>
                   </div>
 
                   {booking.bookingStatus === 'Upcoming' && (
