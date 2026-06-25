@@ -12,6 +12,24 @@ function Login() {
   const location = useLocation()
   const redirectTo = location.state?.from?.pathname || '/'
 
+  const getAuthErrorMessage = (error) => {
+    if (!error) return 'Failed to log in'
+    const code = error.code || ''
+    
+    if (code === 'auth/invalid-credential' || code === 'auth/wrong-password') {
+      return 'Invalid email or password.'
+    }
+    if (code === 'auth/user-not-found') {
+      return 'No account found with this email. Please register first.'
+    }
+    if (code === 'auth/invalid-email') {
+      return 'Please enter a valid email address.'
+    }
+    
+    // Fallback to stripping the "Firebase:" prefix if possible, or use raw message
+    return error.message?.replace('Firebase: ', '') || 'Failed to log in'
+  }
+
   const handleChange = (event) => {
     const { name, value } = event.target
     setFormData((current) => ({ ...current, [name]: value }))
@@ -25,7 +43,7 @@ function Login() {
       await loginUser(formData.email, formData.password)
       navigate(redirectTo, { replace: true })
     } catch (error) {
-      toast.error(error?.message || 'Failed to log in')
+      toast.error(getAuthErrorMessage(error))
     } finally {
       setLoading(false)
     }

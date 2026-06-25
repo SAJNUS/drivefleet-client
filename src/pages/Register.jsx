@@ -23,6 +23,24 @@ function Register() {
   const location = useLocation()
   const redirectTo = location.state?.from?.pathname || '/'
 
+  const getAuthErrorMessage = (error) => {
+    if (!error) return 'Failed to register'
+    const code = error.code || ''
+    
+    if (code === 'auth/email-already-in-use') {
+      return 'An account with this email already exists.'
+    }
+    if (code === 'auth/invalid-email') {
+      return 'Please enter a valid email address.'
+    }
+    if (code === 'auth/weak-password') {
+      return 'Your password is too weak.'
+    }
+    
+    // Fallback to stripping the "Firebase:" prefix if possible, or use raw message
+    return error.message?.replace('Firebase: ', '') || 'Failed to register'
+  }
+
   const handleChange = (event) => {
     const { name, value } = event.target
     setFormData((current) => ({ ...current, [name]: value }))
@@ -57,14 +75,19 @@ function Register() {
 
     try {
       await registerUser(formData.email, formData.password)
+      
+      const finalPhotoURL = formData.photoURL?.trim() 
+        ? formData.photoURL 
+        : `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.name || 'User')}&background=random`
+
       await updateUserProfile({
         displayName: formData.name,
-        photoURL: formData.photoURL,
+        photoURL: finalPhotoURL,
       })
       toast.success('Registration successful')
       navigate('/login', { replace: true })
     } catch (error) {
-      toast.error(error?.message || 'Failed to register')
+      toast.error(getAuthErrorMessage(error))
     } finally {
       setLoading(false)
     }
@@ -77,7 +100,7 @@ function Register() {
       await googleLogin()
       navigate(redirectTo, { replace: true })
     } catch (error) {
-      toast.error(error?.message || 'Google login failed')
+      toast.error(getAuthErrorMessage(error))
     } finally {
       setLoading(false)
     }
@@ -125,7 +148,7 @@ function Register() {
 
         <div className="space-y-2">
           <label className="text-sm font-medium text-slate-700" htmlFor="photoURL">
-            Photo URL
+            Photo URL <span className="text-slate-400 font-normal">(Optional)</span>
           </label>
           <input
             id="photoURL"
@@ -135,7 +158,6 @@ function Register() {
             onChange={handleChange}
             className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-blue-500"
             placeholder="Enter your photo URL"
-            required
           />
         </div>
 
