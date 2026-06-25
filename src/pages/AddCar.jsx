@@ -128,9 +128,8 @@ function AddCar() {
         <h1 className="text-2xl font-semibold text-slate-900 md:text-3xl">
           Add Car
         </h1>
-        <p className="max-w-2xl text-sm text-slate-600 md:text-base">
-          Create a new car listing with the details below. Submitted cars are
-          saved directly to the database.
+        <p className="text-sm text-slate-600 md:text-base">
+          Create a new car listing with the details below. Submitted cars are saved directly to the database.
         </p>
       </div>
 
@@ -194,17 +193,19 @@ function AddCar() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-700" htmlFor="imageUrl">
-              Image URL
+            <label className="text-sm font-medium text-slate-700" htmlFor="modelYear">
+              Model Year
             </label>
             <input
-              id="imageUrl"
-              name="imageUrl"
-              type="url"
-              value={formData.imageUrl}
+              id="modelYear"
+              name="modelYear"
+              type="number"
+              min="1990"
+              max={new Date().getFullYear() + 1}
+              value={formData.modelYear}
               onChange={handleChange}
               className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-blue-500"
-              placeholder="Paste image URL"
+              placeholder="e.g. 2024"
               required
             />
           </div>
@@ -225,43 +226,6 @@ function AddCar() {
               onChange={handleChange}
               className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-blue-500"
               placeholder="Enter seat capacity"
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label
-              className="text-sm font-medium text-slate-700"
-              htmlFor="pickupLocation"
-            >
-              Pickup Location
-            </label>
-            <input
-              id="pickupLocation"
-              name="pickupLocation"
-              type="text"
-              value={formData.pickupLocation}
-              onChange={handleChange}
-              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-blue-500"
-              placeholder="Enter pickup location"
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-700" htmlFor="modelYear">
-              Model Year
-            </label>
-            <input
-              id="modelYear"
-              name="modelYear"
-              type="number"
-              min="1990"
-              max={new Date().getFullYear() + 1}
-              value={formData.modelYear}
-              onChange={handleChange}
-              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-blue-500"
-              placeholder="e.g. 2024"
               required
             />
           </div>
@@ -316,6 +280,41 @@ function AddCar() {
               onChange={handleChange}
               className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-blue-500"
               placeholder="e.g. 12.5 km/l"
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-slate-700" htmlFor="imageUrl">
+              Image URL
+            </label>
+            <input
+              id="imageUrl"
+              name="imageUrl"
+              type="url"
+              value={formData.imageUrl}
+              onChange={handleChange}
+              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-blue-500"
+              placeholder="Paste image URL"
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label
+              className="text-sm font-medium text-slate-700"
+              htmlFor="pickupLocation"
+            >
+              Pickup Location
+            </label>
+            <input
+              id="pickupLocation"
+              name="pickupLocation"
+              type="text"
+              value={formData.pickupLocation}
+              onChange={handleChange}
+              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-blue-500"
+              placeholder="Enter pickup location"
               required
             />
           </div>

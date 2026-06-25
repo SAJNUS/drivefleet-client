@@ -376,7 +376,7 @@ function UpdateCar() {
               {/* Daily Rent Price */}
               <div>
                 <label className={labelCls} htmlFor="dailyRentPrice">
-                  Daily Rent Price (USD)
+                  Daily Rent Price (BDT)
                 </label>
                 <input
                   id="dailyRentPrice"
@@ -407,38 +407,6 @@ function UpdateCar() {
                 </select>
               </div>
 
-              {/* Seat Capacity */}
-              <div>
-                <label className={labelCls} htmlFor="seatCapacity">Seat Capacity</label>
-                <input
-                  id="seatCapacity"
-                  name="seatCapacity"
-                  type="number"
-                  min="1"
-                  value={formData.seatCapacity}
-                  onChange={handleChange}
-                  className={inputCls}
-                  placeholder="e.g. 5"
-                />
-              </div>
-
-              {/* Pickup Location — full width */}
-              <div className="sm:col-span-2">
-                <label className={labelCls} htmlFor="pickupLocation">Pickup Location</label>
-                <div className="flex items-center gap-2.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 transition focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100">
-                  <FiMapPin size={14} className="shrink-0 text-slate-400" />
-                  <input
-                    id="pickupLocation"
-                    name="pickupLocation"
-                    type="text"
-                    value={formData.pickupLocation}
-                    onChange={handleChange}
-                    className="w-full bg-transparent text-sm text-slate-800 outline-none placeholder:text-slate-400"
-                    placeholder="e.g. Savar, Dhaka"
-                  />
-                </div>
-              </div>
-
               {/* Model Year */}
               <div>
                 <label className={labelCls} htmlFor="modelYear">Model Year</label>
@@ -452,6 +420,21 @@ function UpdateCar() {
                   onChange={handleChange}
                   className={inputCls}
                   placeholder="e.g. 2024"
+                />
+              </div>
+
+              {/* Seat Capacity */}
+              <div>
+                <label className={labelCls} htmlFor="seatCapacity">Seat Capacity</label>
+                <input
+                  id="seatCapacity"
+                  name="seatCapacity"
+                  type="number"
+                  min="1"
+                  value={formData.seatCapacity}
+                  onChange={handleChange}
+                  className={inputCls}
+                  placeholder="e.g. 5"
                 />
               </div>
 
@@ -503,8 +486,8 @@ function UpdateCar() {
                 />
               </div>
 
-              {/* Image URL — full width */}
-              <div className="sm:col-span-2">
+              {/* Image URL */}
+              <div>
                 <label className={labelCls} htmlFor="imageUrl">Image URL</label>
                 <input
                   id="imageUrl"
@@ -518,6 +501,23 @@ function UpdateCar() {
                 <p className="mt-1.5 text-xs text-blue-500">
                   Enter a direct image URL of your car.
                 </p>
+              </div>
+
+              {/* Pickup Location */}
+              <div>
+                <label className={labelCls} htmlFor="pickupLocation">Pickup Location</label>
+                <div className="flex items-center gap-2.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 transition focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100">
+                  <FiMapPin size={14} className="shrink-0 text-slate-400" />
+                  <input
+                    id="pickupLocation"
+                    name="pickupLocation"
+                    type="text"
+                    value={formData.pickupLocation}
+                    onChange={handleChange}
+                    className="w-full bg-transparent text-sm text-slate-800 outline-none placeholder:text-slate-400"
+                    placeholder="e.g. Savar, Dhaka"
+                  />
+                </div>
               </div>
 
 
