@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import useAuth from '../hooks/useAuth.js';
 import toast from 'react-hot-toast';
+import { updateProfile, updateEmail, updatePassword } from 'firebase/auth';
+import { auth } from '../firebase/firebase.init.js';
 import {
   FiUser,
   FiMail,
@@ -21,7 +23,8 @@ import {
   FiCreditCard,
   FiDollarSign,
   FiLoader,
-  FiCheck
+  FiCheck,
+  FiInfo
 } from 'react-icons/fi';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -31,10 +34,7 @@ function Profile() {
   const { user } = useAuth();
 
   const [loading, setLoading] = useState(true);
-  const [profileData, setProfileData] = useState({
-    mobileNumber: '',
-    location: ''
-  });
+
   const [stats, setStats] = useState({
     totalCars: 0,
     totalBookings: 0,
@@ -51,6 +51,20 @@ function Profile() {
     password: ''
   });
   const [savingField, setSavingField] = useState(false);
+  const [showGoogleBanner, setShowGoogleBanner] = useState(false);
+  const [bannerPulse, setBannerPulse] = useState(false);
+
+  const isGoogleProvider = user?.providerData?.some(
+    (provider) => provider.providerId === 'google.com'
+  );
+
+  useEffect(() => {
+    let timer;
+    if (showGoogleBanner) {
+      timer = setTimeout(() => setShowGoogleBanner(false), 5000);
+    }
+    return () => clearTimeout(timer);
+  }, [showGoogleBanner, bannerPulse]);
 
   useEffect(() => {
     if (!user?.email) return;
@@ -72,10 +86,7 @@ function Profile() {
 
         const result = await response.json();
         if (result.success) {
-          setProfileData({
-            mobileNumber: result.data.profile.mobileNumber || '',
-            location: result.data.profile.location || ''
-          });
+
           setStats(result.data.stats || {
             totalCars: 0,
             totalBookings: 0,
@@ -98,6 +109,16 @@ function Profile() {
   }, [user]);
 
   const handleEditProfile = () => {
+    if (isGoogleProvider) {
+      if (showGoogleBanner) {
+        setBannerPulse(true);
+        setTimeout(() => setBannerPulse(false), 200);
+      } else {
+        setShowGoogleBanner(true);
+      }
+      return;
+    }
+    
     setEditFormData({
       displayName: user?.displayName || '',
       email: user?.email || '',
@@ -114,11 +135,34 @@ function Profile() {
   const handleSaveProfile = async () => {
     setSavingField(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 800));
-      toast.success('Profile updated successfully! (Simulation)');
+      const promises = [];
+      const { displayName, email, photoURL, password } = editFormData;
+
+      if (displayName !== user.displayName || photoURL !== user.photoURL) {
+        promises.push(updateProfile(auth.currentUser, { displayName, photoURL }));
+      }
+      if (email !== user.email && email) {
+        promises.push(updateEmail(auth.currentUser, email));
+      }
+      if (password) {
+        promises.push(updatePassword(auth.currentUser, password));
+      }
+
+      await Promise.all(promises);
+
+      const token = await user.getIdToken();
+      const payload = { displayName, email, photoURL };
+      const response = await fetch(API_BASE, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(payload)
+      });
+      if (!response.ok) throw new Error('Failed to update backend');
+
+      toast.success('Profile updated successfully!');
       setIsEditingProfile(false);
     } catch (err) {
-      toast.error('Failed to update profile');
+      toast.error(err.message || 'Failed to update profile');
     } finally {
       setSavingField(false);
     }
@@ -171,7 +215,7 @@ function Profile() {
             <p className="mt-1 text-sm text-slate-500">Manage your profile details and settings</p>
           </div>
           <div className="flex items-center gap-2">
-            {isEditingProfile ? (
+            {isEditingProfile && !isGoogleProvider ? (
               <>
                 <button onClick={handleSaveProfile} disabled={savingField} className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition-colors shadow-sm">
                   {savingField ? <FiLoader className="animate-spin" /> : <FiCheck size={20} />}
@@ -181,12 +225,21 @@ function Profile() {
                 </button>
               </>
             ) : (
-              <button onClick={handleEditProfile} className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors shadow-sm">
+              <button onClick={handleEditProfile} className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors shadow-sm ${showGoogleBanner && isGoogleProvider ? 'bg-blue-100 text-blue-700' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'}`}>
                 <FiEdit2 size={18} />
               </button>
             )}
           </div>
         </div>
+
+        {isGoogleProvider && showGoogleBanner && (
+          <div className={`bg-blue-50/50 border-b border-blue-100 px-6 py-4 sm:px-8 flex items-start gap-3 transition-all duration-200 ${bannerPulse ? 'opacity-40 scale-[0.99]' : 'opacity-100 scale-100'}`}>
+            <FiInfo className="text-blue-600 shrink-0 mt-0.5" />
+            <p className="text-sm text-blue-800 font-medium">
+              Connected with Google — manage your name, photo, email, and password from your Google Account.
+            </p>
+          </div>
+        )}
 
         <div className="p-6 sm:p-8">
           <div className="flex flex-col items-center sm:flex-row sm:items-center gap-8">
@@ -207,13 +260,13 @@ function Profile() {
                 <div className="flex items-center gap-2 text-sm font-medium text-slate-500">
                   <FiUser className="text-slate-400" /> Full Name
                 </div>
-                {isEditingProfile ? (
+                {isEditingProfile && !isGoogleProvider ? (
                   <input
                     type="text"
                     name="displayName"
                     value={editFormData.displayName}
                     onChange={handleEditChange}
-                    className="w-full rounded-xl border border-blue-200 bg-white px-4 py-2.5 text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-shadow"
+                    className="w-full rounded-xl border border-blue-200 bg-white px-4 py-2.5 text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-shadow disabled:bg-slate-50 disabled:text-slate-400 disabled:border-slate-200"
                     disabled={savingField}
                   />
                 ) : (
@@ -228,13 +281,13 @@ function Profile() {
                 <div className="flex items-center gap-2 text-sm font-medium text-slate-500">
                   <FiMail className="text-slate-400" /> Email Address
                 </div>
-                {isEditingProfile ? (
+                {isEditingProfile && !isGoogleProvider ? (
                   <input
                     type="email"
                     name="email"
                     value={editFormData.email}
                     onChange={handleEditChange}
-                    className="w-full rounded-xl border border-blue-200 bg-white px-4 py-2.5 text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-shadow"
+                    className="w-full rounded-xl border border-blue-200 bg-white px-4 py-2.5 text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-shadow disabled:bg-slate-50 disabled:text-slate-400 disabled:border-slate-200"
                     disabled={savingField}
                   />
                 ) : (
@@ -249,13 +302,13 @@ function Profile() {
                 <div className="flex items-center gap-2 text-sm font-medium text-slate-500">
                   <span className="text-slate-400 font-mono">🔗</span> Photo URL
                 </div>
-                {isEditingProfile ? (
+                {isEditingProfile && !isGoogleProvider ? (
                   <input
                     type="text"
                     name="photoURL"
                     value={editFormData.photoURL}
                     onChange={handleEditChange}
-                    className="w-full rounded-xl border border-blue-200 bg-white px-4 py-2.5 text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-shadow"
+                    className="w-full rounded-xl border border-blue-200 bg-white px-4 py-2.5 text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-shadow disabled:bg-slate-50 disabled:text-slate-400 disabled:border-slate-200"
                     disabled={savingField}
                   />
                 ) : (
@@ -270,14 +323,14 @@ function Profile() {
                 <div className="flex items-center gap-2 text-sm font-medium text-slate-500">
                   <FiLock className="text-slate-400" /> Password
                 </div>
-                {isEditingProfile ? (
+                {isEditingProfile && !isGoogleProvider ? (
                   <input
                     type="password"
                     name="password"
                     value={editFormData.password}
                     onChange={handleEditChange}
                     placeholder="New password (blank to keep)"
-                    className="w-full rounded-xl border border-blue-200 bg-white px-4 py-2.5 text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-shadow"
+                    className="w-full rounded-xl border border-blue-200 bg-white px-4 py-2.5 text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-shadow disabled:bg-slate-50 disabled:text-slate-400 disabled:border-slate-200"
                     disabled={savingField}
                   />
                 ) : (
