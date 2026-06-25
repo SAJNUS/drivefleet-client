@@ -5,6 +5,8 @@ import toast from 'react-hot-toast'
 import useAuth from '../hooks/useAuth.js'
 import { carTagStyles } from '../components/CarCard.jsx'
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 function MyAddedCars() {
   const { user } = useAuth()
   const navigate = useNavigate()
@@ -31,7 +33,7 @@ function MyAddedCars() {
         
         // Fetch user's cars
         const carsResponse = await fetch(
-          `http://localhost:5050/cars?email=${encodeURIComponent(user.email)}`,
+          `${API_URL}/cars?email=${encodeURIComponent(user.email)}`,
           {
             signal: controller.signal,
             headers: { Authorization: `Bearer ${token}` },
@@ -47,7 +49,7 @@ function MyAddedCars() {
 
         // Fetch user's car bookings (to calculate total earnings)
         const bookingsResponse = await fetch(
-          `http://localhost:5050/bookings?ownerEmail=${encodeURIComponent(user.email)}`,
+          `${API_URL}/bookings?ownerEmail=${encodeURIComponent(user.email)}`,
           {
             signal: controller.signal,
             headers: { Authorization: `Bearer ${token}` },
@@ -113,7 +115,7 @@ function MyAddedCars() {
     try {
       const token = await user.getIdToken()
       const response = await fetch(
-        `http://localhost:5050/cars/${deleteTarget._id}`,
+        `${API_URL}/cars/${deleteTarget._id}`,
         {
           method: 'DELETE',
           headers: { Authorization: `Bearer ${token}` },

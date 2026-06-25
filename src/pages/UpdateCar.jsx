@@ -11,7 +11,8 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import useAuth from '../hooks/useAuth'
 
-const API_BASE = 'http://localhost:5050/cars'
+const API_URL = import.meta.env.VITE_API_URL;
+const API_BASE = `${API_URL}/cars`
 
 const carTypes = ['SUV', 'Sedan', 'Hatchback', 'Luxury', 'Pickup', 'Electric']
 const transmissionOptions = ['Automatic', 'Manual', 'CVT']

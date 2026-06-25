@@ -16,7 +16,8 @@ import toast from 'react-hot-toast'
 import useAuth from '../hooks/useAuth.js'
 import { carTagStyles } from '../components/CarCard.jsx'
 
-const API_BASE = 'http://localhost:5050'
+const API_URL = import.meta.env.VITE_API_URL;
+const API_BASE = API_URL;
 const placeholderImageUrl = 'https://placehold.co/1200x800?text=Car+Image'
 
 const sectionVariant = {

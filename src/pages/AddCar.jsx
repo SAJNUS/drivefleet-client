@@ -2,6 +2,8 @@ import { useState } from 'react'
 import toast from 'react-hot-toast'
 import useAuth from '../hooks/useAuth.js'
 
+const API_URL = import.meta.env.VITE_API_URL
+
 const initialFormData = {
   carName: '',
   dailyRentPrice: '',
@@ -98,7 +100,7 @@ function AddCar() {
 
     try {
       const token = await user.getIdToken()
-      const response = await fetch('http://localhost:5050/cars', {
+      const response = await fetch(`${API_URL}/cars`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

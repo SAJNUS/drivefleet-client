@@ -80,6 +80,8 @@ const staggerContainer = {
   show: { opacity: 1, transition: { staggerChildren: 0.12 } },
 }
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 function Home() {
   const [featuredCars, setFeaturedCars] = useState([])
   const [loading, setLoading] = useState(true)
@@ -87,7 +89,7 @@ function Home() {
   useEffect(() => {
     async function fetchLatestCars() {
       try {
-        const response = await fetch('http://localhost:5050/cars')
+        const response = await fetch(`${API_URL}/cars`)
         if (response.ok) {
           const result = await response.json()
           const data = Array.isArray(result.data) ? result.data : []

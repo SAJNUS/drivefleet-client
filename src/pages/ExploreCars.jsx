@@ -11,7 +11,8 @@ import {
 } from 'react-icons/fi'
 import CarCard from '../components/CarCard.jsx'
 
-const apiUrl = 'http://localhost:5050/cars'
+const API_URL = import.meta.env.VITE_API_URL;
+const apiUrl = `${API_URL}/cars`
 const placeholderImageUrl = 'https://placehold.co/600x400?text=Car'
 
 const bannerImage = '/banner-section-picture.png'

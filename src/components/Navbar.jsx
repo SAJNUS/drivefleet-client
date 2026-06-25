@@ -9,7 +9,8 @@ const navLinks = [
   { label: 'Explore Cars', to: '/explore-cars' },
 ]
 
-const API_BASE_NOTIFICATIONS = 'http://localhost:5050/notifications'
+const API_URL = import.meta.env.VITE_API_URL;
+const API_BASE_NOTIFICATIONS = `${API_URL}/notifications`
 
 function Navbar() {
   const { user, logoutUser } = useAuth()
@@ -62,7 +63,7 @@ function Navbar() {
   useEffect(() => {
     if (!user || !user.email) return
 
-    const socket = io('http://localhost:5050')
+    const socket = io(API_URL)
 
     socket.on('connect', () => {
       socket.emit('join_room', user.email)

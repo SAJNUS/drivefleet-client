@@ -14,7 +14,8 @@ import {
 import toast from 'react-hot-toast'
 import useAuth from '../hooks/useAuth.js'
 
-const API_BASE = 'http://localhost:5050/bookings'
+const API_URL = import.meta.env.VITE_API_URL;
+const API_BASE = `${API_URL}/bookings`
 
 // ─── Format an ISO date string into a readable short date ─────────────────────
 function formatDate(iso) {
