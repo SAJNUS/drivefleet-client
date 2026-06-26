@@ -87,6 +87,11 @@ function Home() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual'
+    }
+    window.scrollTo(0, 0)
+
     async function fetchLatestCars() {
       try {
         const response = await fetch(`${API_URL}/cars`)
