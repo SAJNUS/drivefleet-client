@@ -222,7 +222,8 @@ function Navbar() {
                   type="button"
                   onClick={() => {
                     setNotificationsOpen(!notificationsOpen)
-                    if (menuOpen) setMenuOpen(false)
+                    setMenuOpen(false)
+                    setMobileMenuOpen(false)
                   }}
                   className="relative flex items-center justify-center p-2 text-slate-500 transition hover:text-blue-600"
                 >
@@ -233,7 +234,7 @@ function Navbar() {
                 </button>
 
                 {notificationsOpen && (
-                  <div className="absolute right-0 top-12 w-80 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl sm:w-96">
+                  <div className="fixed left-4 right-4 top-20 z-50 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl sm:absolute sm:left-auto sm:right-0 sm:top-12 sm:w-96">
                     <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3 bg-slate-50">
                       <h3 className="text-sm font-semibold text-slate-900">Notifications</h3>
                       {unreadCount > 0 && (
@@ -293,7 +294,8 @@ function Navbar() {
                   type="button"
                   onClick={() => {
                     setMenuOpen(!menuOpen)
-                    if (notificationsOpen) setNotificationsOpen(false)
+                    setNotificationsOpen(false)
+                    setMobileMenuOpen(false)
                   }}
                   className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-2 py-1.5 shadow-sm transition hover:border-blue-200"
                 >

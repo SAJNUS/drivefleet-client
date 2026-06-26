@@ -56,6 +56,8 @@ function Profile() {
   const [showGoogleBanner, setShowGoogleBanner] = useState(false);
   const [bannerPulse, setBannerPulse] = useState(false);
   const [showAllActivity, setShowAllActivity] = useState(false);
+  const [showEarnings, setShowEarnings] = useState(false);
+  const [showSpent, setShowSpent] = useState(false);
 
   const isGoogleProvider = user?.providerData?.some(
     (provider) => provider.providerId === 'google.com'
@@ -383,11 +385,14 @@ function Profile() {
             </div>
             <div className="mt-4 flex items-baseline">
               <span className="text-xl font-normal text-emerald-600 mr-1 cursor-default">৳</span>
-              <div className="relative group w-max">
-                <p className="text-3xl font-bold text-emerald-600 truncate cursor-default">
+              <div 
+                className="relative group w-max"
+                onClick={() => setShowEarnings(!showEarnings)}
+              >
+                <p className="text-3xl font-bold text-emerald-600 truncate cursor-pointer sm:cursor-default">
                   {formatCompactNumber(stats.totalEarnings)}
                 </p>
-                <div className="absolute bottom-full left-0 mb-2 hidden group-hover:block whitespace-nowrap rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white shadow-lg z-10">
+                <div className={`absolute bottom-full left-0 mb-2 ${showEarnings ? 'block' : 'hidden'} sm:group-hover:block whitespace-nowrap rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white shadow-lg z-10`}>
                   ৳ {stats.totalEarnings.toLocaleString()}
                   <div className="absolute left-4 top-full -mt-1 -translate-x-1/2 border-4 border-transparent border-t-slate-900"></div>
                 </div>
@@ -402,11 +407,14 @@ function Profile() {
             </div>
             <div className="mt-4 flex items-baseline">
               <span className="text-xl font-normal text-rose-600 mr-1 cursor-default">৳</span>
-              <div className="relative group w-max">
-                <p className="text-3xl font-bold text-rose-600 truncate cursor-default">
+              <div 
+                className="relative group w-max"
+                onClick={() => setShowSpent(!showSpent)}
+              >
+                <p className="text-3xl font-bold text-rose-600 truncate cursor-pointer sm:cursor-default">
                   {formatCompactNumber(stats.totalSpent)}
                 </p>
-                <div className="absolute bottom-full left-0 mb-2 hidden group-hover:block whitespace-nowrap rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white shadow-lg z-10">
+                <div className={`absolute bottom-full left-0 mb-2 ${showSpent ? 'block' : 'hidden'} sm:group-hover:block whitespace-nowrap rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white shadow-lg z-10`}>
                   ৳ {stats.totalSpent.toLocaleString()}
                   <div className="absolute left-4 top-full -mt-1 -translate-x-1/2 border-4 border-transparent border-t-slate-900"></div>
                 </div>
