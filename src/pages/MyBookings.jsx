@@ -369,23 +369,23 @@ function MyBookings() {
                           {openNoteId === booking._id && (
                             <>
                               <div 
-                                className="fixed inset-0 z-[40]" 
+                                className="fixed inset-0 z-[40] bg-slate-900/20 backdrop-blur-sm" 
                                 onClick={() => setOpenNoteId(null)}
                               />
                               <div 
-                                className="absolute right-0 top-full z-[50] mt-2 w-52 rounded-xl border border-slate-100 bg-white p-3 shadow-lg text-left cursor-auto"
+                                className="fixed left-1/2 top-1/2 z-[50] w-[85%] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-xl border border-slate-100 bg-white p-5 shadow-2xl text-left cursor-auto"
                               >
-                                <div className="flex items-center justify-between mb-1.5">
-                                  <span className="font-semibold text-slate-800 text-xs">Special Note</span>
+                                <div className="flex items-center justify-between mb-2">
+                                  <span className="font-semibold text-slate-800 text-sm">Special Note</span>
                                   <button 
                                     type="button"
                                     className="text-slate-400 hover:text-slate-600 transition"
                                     onClick={() => setOpenNoteId(null)}
                                   >
-                                    <FiX size={14} />
+                                    <FiX size={16} />
                                   </button>
                                 </div>
-                                <p className="text-slate-600 leading-relaxed text-xs break-words">
+                                <p className="text-slate-600 leading-relaxed text-sm break-words">
                                   {booking.specialNote}
                                 </p>
                               </div>
@@ -513,23 +513,23 @@ function MyBookings() {
                             {openNoteId === booking._id && (
                               <>
                                 <div 
-                                  className="fixed inset-0 z-[40]" 
+                                  className="fixed inset-0 z-[40] bg-slate-900/20 backdrop-blur-sm" 
                                   onClick={() => setOpenNoteId(null)}
                                 />
                                 <div 
-                                  className="absolute right-0 top-full sm:bottom-full sm:top-auto z-[50] mt-2 sm:mt-0 sm:mb-2 w-52 rounded-xl border border-slate-100 bg-white p-3 shadow-lg text-left cursor-auto"
+                                  className="fixed left-1/2 top-1/2 z-[50] w-[85%] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-xl border border-slate-100 bg-white p-5 shadow-2xl text-left cursor-auto"
                                 >
-                                  <div className="flex items-center justify-between mb-1.5">
-                                    <span className="font-semibold text-slate-800 text-xs">Special Note</span>
+                                  <div className="flex items-center justify-between mb-2">
+                                    <span className="font-semibold text-slate-800 text-sm">Special Note</span>
                                     <button 
                                       type="button"
                                       className="text-slate-400 hover:text-slate-600 transition"
                                       onClick={() => setOpenNoteId(null)}
                                     >
-                                      <FiX size={14} />
+                                      <FiX size={16} />
                                     </button>
                                   </div>
-                                  <p className="text-slate-600 leading-relaxed text-xs break-words">
+                                  <p className="text-slate-600 leading-relaxed text-sm break-words">
                                     {booking.specialNote}
                                   </p>
                                 </div>
