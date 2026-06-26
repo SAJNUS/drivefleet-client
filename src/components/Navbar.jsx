@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
-import { FiChevronDown, FiLogOut, FiUser, FiList, FiBell, FiCheck, FiMenu, FiX } from 'react-icons/fi'
+import { FiChevronDown, FiLogOut, FiUser, FiList, FiBell, FiCheck, FiMenu, FiX, FiPlusCircle, FiCalendar } from 'react-icons/fi'
 import { io } from 'socket.io-client'
 import useAuth from '../hooks/useAuth.js'
 
 const navLinks = [
   { label: 'Home', to: '/' },
   { label: 'Explore Cars', to: '/explore-cars' },
+  { label: 'Add Car', to: '/add-car' },
+  { label: 'My Bookings', to: '/my-bookings' }
 ]
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -171,34 +173,6 @@ function Navbar() {
               {link.label}
             </NavLink>
           ))}
-          {user && (
-            <>
-              <NavLink
-                to="/add-car"
-                className={({ isActive }) =>
-                  `relative pb-1 transition ${
-                    isActive
-                      ? 'text-blue-600 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-full after:rounded-full after:bg-blue-600'
-                      : 'hover:text-slate-900'
-                  }`
-                }
-              >
-                Add Car
-              </NavLink>
-              <NavLink
-                to="/my-bookings"
-                className={({ isActive }) =>
-                  `relative pb-1 transition ${
-                    isActive
-                      ? 'text-blue-600 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-full after:rounded-full after:bg-blue-600'
-                      : 'hover:text-slate-900'
-                  }`
-                }
-              >
-                My Bookings
-              </NavLink>
-            </>
-          )}
         </nav>
 
         <div className="flex flex-1 items-center justify-end gap-2 sm:gap-4">
@@ -346,6 +320,22 @@ function Navbar() {
                         Profile
                       </Link>
                       <Link
+                        to="/add-car"
+                        onClick={() => setMenuOpen(false)}
+                        className="flex items-center gap-2 rounded-lg px-3 py-2 transition hover:bg-slate-50 hover:text-slate-900"
+                      >
+                        <FiPlusCircle size={14} />
+                        Add Car
+                      </Link>
+                      <Link
+                        to="/my-bookings"
+                        onClick={() => setMenuOpen(false)}
+                        className="flex items-center gap-2 rounded-lg px-3 py-2 transition hover:bg-slate-50 hover:text-slate-900"
+                      >
+                        <FiCalendar size={14} />
+                        My Bookings
+                      </Link>
+                      <Link
                         to="/my-added-cars"
                         onClick={() => setMenuOpen(false)}
                         className="flex items-center gap-2 rounded-lg px-3 py-2 transition hover:bg-slate-50 hover:text-slate-900"
@@ -398,28 +388,6 @@ function Navbar() {
               {link.label}
             </NavLink>
           ))}
-          {user && (
-            <>
-              <NavLink
-                to="/add-car"
-                onClick={() => setMobileMenuOpen(false)}
-                className={({ isActive }) =>
-                  `transition ${isActive ? 'text-blue-600' : 'hover:text-slate-900'}`
-                }
-              >
-                Add Car
-              </NavLink>
-              <NavLink
-                to="/my-bookings"
-                onClick={() => setMobileMenuOpen(false)}
-                className={({ isActive }) =>
-                  `transition ${isActive ? 'text-blue-600' : 'hover:text-slate-900'}`
-                }
-              >
-                My Bookings
-              </NavLink>
-            </>
-          )}
         </nav>
       )}
     </header>
