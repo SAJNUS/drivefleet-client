@@ -85,6 +85,7 @@ function Footer() {
                       <Link
                         to={link.path}
                         className="transition hover:text-white"
+                        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                       >
                         {link.name}
                       </Link>
