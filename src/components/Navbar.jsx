@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
-import { FiChevronDown, FiLogOut, FiUser, FiList, FiBell, FiCheck } from 'react-icons/fi'
+import { FiChevronDown, FiLogOut, FiUser, FiList, FiBell, FiCheck, FiMenu, FiX } from 'react-icons/fi'
 import { io } from 'socket.io-client'
 import useAuth from '../hooks/useAuth.js'
 
@@ -15,6 +15,7 @@ const API_BASE_NOTIFICATIONS = `${API_URL}/notifications`
 function Navbar() {
   const { user, logoutUser } = useAuth()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [notificationsOpen, setNotificationsOpen] = useState(false)
   
   const [notifications, setNotifications] = useState([])
@@ -138,7 +139,7 @@ function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/80 shadow-sm backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/80 shadow-sm backdrop-blur">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
         <div className="flex flex-1 items-center justify-start">
           <Link to="/" className="flex flex-col">
@@ -197,7 +198,7 @@ function Navbar() {
           )}
         </nav>
 
-        <div className="flex flex-1 items-center justify-end gap-4">
+        <div className="flex flex-1 items-center justify-end gap-2 sm:gap-4">
           {!user ? (
             <div className="flex items-center gap-2">
               <Link
@@ -214,7 +215,7 @@ function Navbar() {
               </Link>
             </div>
           ) : (
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1 sm:gap-4">
               {/* Notification Bell */}
               <div className="relative" ref={notificationsRef}>
                 <button
@@ -361,8 +362,61 @@ function Navbar() {
               </div>
             </div>
           )}
+          
+          {/* Hamburger Menu Button */}
+          <button
+            type="button"
+            className="flex items-center justify-center p-1 sm:p-2 text-slate-700 transition hover:text-blue-600 md:hidden"
+            onClick={() => {
+              setMobileMenuOpen(!mobileMenuOpen)
+              setMenuOpen(false)
+              setNotificationsOpen(false)
+            }}
+          >
+            {mobileMenuOpen ? <FiX size={20} /> : <FiMenu size={20} />}
+          </button>
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <nav className="absolute left-0 top-full w-full flex flex-col items-center gap-4 border-b border-slate-200/70 bg-white px-4 py-6 text-sm font-semibold text-slate-600 shadow-md md:hidden">
+          {navLinks.map((link) => (
+            <NavLink
+              key={link.to}
+              to={link.to}
+              onClick={() => setMobileMenuOpen(false)}
+              className={({ isActive }) =>
+                `transition ${isActive ? 'text-blue-600' : 'hover:text-slate-900'}`
+              }
+            >
+              {link.label}
+            </NavLink>
+          ))}
+          {user && (
+            <>
+              <NavLink
+                to="/add-car"
+                onClick={() => setMobileMenuOpen(false)}
+                className={({ isActive }) =>
+                  `transition ${isActive ? 'text-blue-600' : 'hover:text-slate-900'}`
+                }
+              >
+                Add Car
+              </NavLink>
+              <NavLink
+                to="/my-bookings"
+                onClick={() => setMobileMenuOpen(false)}
+                className={({ isActive }) =>
+                  `transition ${isActive ? 'text-blue-600' : 'hover:text-slate-900'}`
+                }
+              >
+                My Bookings
+              </NavLink>
+            </>
+          )}
+        </nav>
+      )}
     </header>
   )
 }
