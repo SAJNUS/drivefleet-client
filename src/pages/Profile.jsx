@@ -53,6 +53,7 @@ function Profile() {
   const [savingField, setSavingField] = useState(false);
   const [showGoogleBanner, setShowGoogleBanner] = useState(false);
   const [bannerPulse, setBannerPulse] = useState(false);
+  const [showAllActivity, setShowAllActivity] = useState(false);
 
   const isGoogleProvider = user?.providerData?.some(
     (provider) => provider.providerId === 'google.com'
@@ -399,11 +400,11 @@ function Profile() {
         <div className="p-6 sm:p-8">
           {activities.length > 0 ? (
             <div className="space-y-6">
-              {activities.map((activity, index) => (
+              {activities.slice(0, 5).map((activity, index, arr) => (
                 <div key={activity._id || index} className="flex gap-4 group">
                   <div className="relative flex flex-col items-center">
                     {getActivityIcon(activity.type)}
-                    {index !== activities.length - 1 && (
+                    {index !== arr.length - 1 && (
                       <div className="w-0.5 h-full bg-slate-100 mt-2 absolute top-10" />
                     )}
                   </div>
@@ -418,11 +419,16 @@ function Profile() {
                 </div>
               ))}
 
-              <div className="pt-4 border-t border-slate-100 flex justify-center">
-                <button className="text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors">
-                  View All Activity
-                </button>
-              </div>
+              {activities.length > 5 && (
+                <div className="pt-4 border-t border-slate-100 flex justify-center">
+                  <button 
+                    onClick={() => setShowAllActivity(true)}
+                    className="text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors"
+                  >
+                    View All
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -437,6 +443,46 @@ function Profile() {
           )}
         </div>
       </section>
+
+      {/* ── All Activity Modal ────────────────────────────────────────────── */}
+      {showAllActivity && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm transition-opacity">
+          <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[80vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 bg-slate-50/50 shrink-0">
+              <h3 className="text-xl font-bold text-slate-900">All Activity History</h3>
+              <button 
+                onClick={() => setShowAllActivity(false)}
+                className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
+              >
+                <FiX size={24} />
+              </button>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar">
+              <div className="space-y-6">
+                {activities.map((activity, index) => (
+                  <div key={activity._id || index} className="flex gap-4 group">
+                    <div className="relative flex flex-col items-center">
+                      {getActivityIcon(activity.type)}
+                      {index !== activities.length - 1 && (
+                        <div className="w-0.5 h-full bg-slate-100 mt-2 absolute top-10" />
+                      )}
+                    </div>
+                    <div className="pb-6 pt-2">
+                      <p className="text-base font-medium text-slate-800">
+                        {activity.message}
+                      </p>
+                      <div className="mt-1.5 flex items-center gap-2 text-sm text-slate-500">
+                        <time dateTime={activity.createdAt}>{formatDate(activity.createdAt)}</time>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
