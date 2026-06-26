@@ -86,7 +86,7 @@ function Footer() {
                         to={link.path}
                         onClick={(e) => {
                           if (e.ctrlKey || e.metaKey || e.shiftKey || e.button === 1) return
-                          window.scrollTo({ top: 0, behavior: 'smooth' })
+                          window.scrollTo({ top: 0, behavior: 'instant' })
                         }}
                         className="transition hover:text-white"
                       >
