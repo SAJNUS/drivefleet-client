@@ -25,16 +25,17 @@ function MyAddedCars() {
 
     const controller = new AbortController()
 
-    async function loadMyCars() {
+    const timeoutId = setTimeout(async () => {
       try {
-        setLoading(true)
         setError('')
 
         const token = await user.getIdToken()
 
+        const searchParam = searchQuery.trim() ? `&search=${encodeURIComponent(searchQuery.trim())}` : ''
+
         // Fetch user's cars
         const carsResponse = await fetch(
-          `${API_URL}/cars?email=${encodeURIComponent(user.email)}`,
+          `${API_URL}/cars?email=${encodeURIComponent(user.email)}${searchParam}`,
           {
             signal: controller.signal,
             headers: { Authorization: `Bearer ${token}` },
@@ -71,12 +72,13 @@ function MyAddedCars() {
       } finally {
         setLoading(false)
       }
+    }, 300)
+
+    return () => {
+      clearTimeout(timeoutId)
+      controller.abort()
     }
-
-    loadMyCars()
-
-    return () => controller.abort()
-  }, [user?.email])
+  }, [user?.email, searchQuery])
 
   const userCars = cars
   const activeCars = userCars.filter((car) => car.availabilityStatus === 'Available')
@@ -90,13 +92,7 @@ function MyAddedCars() {
   // Filter and Sort
   let processedCars = [...userCars]
 
-  if (searchQuery.trim()) {
-    const q = searchQuery.toLowerCase()
-    processedCars = processedCars.filter((car) =>
-      car.carName?.toLowerCase().includes(q) ||
-      car.carType?.toLowerCase().includes(q)
-    )
-  }
+
 
   processedCars.sort((a, b) => {
     if (sortOption === 'price_low') return (a.dailyRentPrice || 0) - (b.dailyRentPrice || 0)

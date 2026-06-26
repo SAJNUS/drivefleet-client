@@ -30,12 +30,12 @@ function ExploreCars() {
   useEffect(() => {
     const controller = new AbortController()
 
-    async function loadCars() {
+    const timeoutId = setTimeout(async () => {
       try {
-        setLoading(true)
         setError('')
 
-        const response = await fetch(apiUrl, { signal: controller.signal })
+        const searchParam = searchTerm.trim() ? `?search=${encodeURIComponent(searchTerm.trim())}` : ''
+        const response = await fetch(`${apiUrl}${searchParam}`, { signal: controller.signal })
 
         if (!response.ok) {
           throw new Error(`Failed to load cars (${response.status})`)
@@ -52,12 +52,13 @@ function ExploreCars() {
       } finally {
         setLoading(false)
       }
+    }, 300)
+
+    return () => {
+      clearTimeout(timeoutId)
+      controller.abort()
     }
-
-    loadCars()
-
-    return () => controller.abort()
-  }, [])
+  }, [searchTerm])
 
   const transformedCars = useMemo(
     () =>
@@ -84,16 +85,11 @@ function ExploreCars() {
   }, [transformedCars])
 
   const filteredCars = useMemo(() => {
-    const normalizedSearch = searchTerm.trim().toLowerCase()
-
     let result = transformedCars.filter((car) => {
-      const matchesSearch = normalizedSearch
-        ? car.name.toLowerCase().includes(normalizedSearch)
-        : true
       const matchesType =
         selectedTypes.includes('All Types') || selectedTypes.includes(car.type)
 
-      return matchesSearch && matchesType
+      return matchesType
     })
 
     result = [...result].sort((firstCar, secondCar) => {
@@ -105,7 +101,7 @@ function ExploreCars() {
     })
 
     return result
-  }, [transformedCars, searchTerm, selectedTypes, sortOrder])
+  }, [transformedCars, selectedTypes, sortOrder])
 
   const totalPages = Math.max(1, Math.ceil(filteredCars.length / itemsPerPage))
 
