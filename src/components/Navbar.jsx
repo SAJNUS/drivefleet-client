@@ -68,9 +68,19 @@ function Navbar() {
 
     const socket = io(API_URL)
 
-    socket.on('connect', () => {
+    if (!socket.connected) {
+      socket.connect()
+    }
+
+    const handleConnect = () => {
       socket.emit('join_room', user.email)
-    })
+    }
+
+    if (socket.connected) {
+      handleConnect()
+    }
+    
+    socket.on('connect', handleConnect)
 
     socket.on('new_notification', (notification) => {
       setNotifications((prev) => [notification, ...prev])
@@ -78,6 +88,7 @@ function Navbar() {
     })
 
     return () => {
+      socket.off('connect', handleConnect)
       socket.off('new_notification')
       socket.disconnect()
     }
