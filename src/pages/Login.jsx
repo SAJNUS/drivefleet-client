@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { FcGoogle } from 'react-icons/fc'
@@ -11,6 +11,10 @@ function Login() {
   const navigate = useNavigate()
   const location = useLocation()
   const redirectTo = location.state?.from?.pathname || '/'
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }, [])
 
   const getAuthErrorMessage = (error) => {
     if (!error) return 'Failed to log in'
@@ -41,7 +45,7 @@ function Login() {
 
     try {
       await loginUser(formData.email, formData.password)
-      navigate(redirectTo, { replace: true })
+      navigate(redirectTo, { replace: true, state: location.state })
     } catch (error) {
       toast.error(getAuthErrorMessage(error))
     } finally {
@@ -54,7 +58,7 @@ function Login() {
 
     try {
       await googleLogin()
-      navigate(redirectTo, { replace: true })
+      navigate(redirectTo, { replace: true, state: location.state })
     } catch (error) {
       toast.error(error?.message || 'Google login failed')
     } finally {
@@ -123,7 +127,11 @@ function Login() {
 
       <p className="mt-6 text-center text-sm text-slate-600">
         New to DriveFleet?{' '}
-        <Link to="/register" className="font-semibold text-blue-600">
+        <Link 
+          to="/register" 
+          state={{ from: location.state?.from }} 
+          className="font-semibold text-blue-600"
+        >
           Create an account
         </Link>
       </p>

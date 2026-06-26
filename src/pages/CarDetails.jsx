@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import {
   FiCalendar,
   FiCheckCircle,
@@ -50,6 +50,7 @@ function calcRentalDays(start, end) {
 function CarDetails() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const { user } = useAuth()
 
   const [selectedCar, setSelectedCar] = useState(null)
@@ -151,23 +152,51 @@ function CarDetails() {
     return () => controller.abort()
   }, [id])
 
+  // ── Pending Booking auto-submit (after guest login) ─────────────────────────
+  useEffect(() => {
+    if (user && location.state?.pendingBooking && !submitting) {
+      const submitPendingBooking = async () => {
+        setSubmitting(true)
+        const payload = { ...location.state.pendingBooking, renterEmail: user.email }
+        
+        // Clear state to prevent duplicate submissions on refresh
+        navigate(location.pathname, { replace: true, state: {} })
+
+        try {
+          const token = await user.getIdToken()
+          const response = await fetch(`${API_BASE}/bookings`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(payload),
+          })
+
+          const result = await response.json()
+
+          if (!response.ok) {
+            throw new Error(result.message || 'Failed to create booking.')
+          }
+
+          toast.success(`${payload.carName} booked successfully!`)
+          navigate('/my-bookings', { replace: true })
+        } catch (err) {
+          toast.error(err.message || 'Something went wrong processing your pending booking.')
+        } finally {
+          setSubmitting(false)
+        }
+      }
+
+      submitPendingBooking()
+    }
+  }, [user, location.state?.pendingBooking])
+
   // ── Book Now handler ─────────────────────────────────────────────────────────
   const handleBooking = async () => {
-    // Guard: must be logged in
-    if (!user) {
-      toast.error('Please log in to book a car.')
-      return
-    }
-
     // Guard: car unavailable
     if (selectedCar.status !== 'Available') {
       toast.error('This car is currently unavailable.')
-      return
-    }
-
-    // Guard: cannot book own car
-    if (selectedCar.ownerEmail && user.email === selectedCar.ownerEmail) {
-      toast.error('You cannot book your own car.')
       return
     }
 
@@ -180,6 +209,32 @@ function CarDetails() {
     // Guard: date order
     if (rentalDays <= 0) {
       toast.error('Return date must be after the pickup date.')
+      return
+    }
+
+    // Guard: must be logged in
+    if (!user) {
+      const payload = {
+        carId: selectedCar.id,
+        carName: selectedCar.name,
+        carImage: selectedCar.image,
+        pickupLocation: selectedCar.location,
+        ownerEmail: selectedCar.ownerEmail ?? '',
+        renterEmail: '', // filled after login
+        startDate,
+        endDate,
+        totalCost,
+        bookingStatus: 'Upcoming',
+        driverNeeded,
+        specialNote,
+      }
+      navigate('/login', { state: { from: location, pendingBooking: payload } })
+      return
+    }
+
+    // Guard: cannot book own car
+    if (selectedCar.ownerEmail && user.email === selectedCar.ownerEmail) {
+      toast.error('You cannot book your own car.')
       return
     }
 
@@ -407,7 +462,7 @@ function CarDetails() {
         </div>
 
         {/* ── RIGHT COLUMN — booking card ── */}
-        <div className="lg:sticky lg:top-28 lg:self-start">
+        <div className="lg:self-start">
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <h2 className="text-base font-bold text-slate-900">Book This Car</h2>
             <div className="mt-1 flex items-baseline gap-1 text-xl text-blue-600">

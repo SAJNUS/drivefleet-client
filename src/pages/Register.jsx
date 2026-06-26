@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { FcGoogle } from 'react-icons/fc'
@@ -22,6 +22,10 @@ function Register() {
   const navigate = useNavigate()
   const location = useLocation()
   const redirectTo = location.state?.from?.pathname || '/'
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }, [])
 
   const getAuthErrorMessage = (error) => {
     if (!error) return 'Failed to register'
@@ -85,7 +89,7 @@ function Register() {
         photoURL: finalPhotoURL,
       })
       toast.success('Registration successful')
-      navigate('/login', { replace: true })
+      navigate('/login', { replace: true, state: location.state })
     } catch (error) {
       toast.error(getAuthErrorMessage(error))
     } finally {
@@ -98,7 +102,7 @@ function Register() {
 
     try {
       await googleLogin()
-      navigate(redirectTo, { replace: true })
+      navigate(redirectTo, { replace: true, state: location.state })
     } catch (error) {
       toast.error(getAuthErrorMessage(error))
     } finally {
