@@ -190,22 +190,14 @@ function MyBookings() {
   // ── Loading state ─────────────────────────────────────────────────────────
   if (loadingBookings) {
     return (
-      <section className="space-y-8">
-        <div className="space-y-2">
-          <h1 className="text-2xl font-semibold text-slate-900 md:text-3xl">
-            My Bookings
-          </h1>
-          <p className="text-sm text-slate-500">
-            Review and manage your current bookings.
-          </p>
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
+          <span className="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+          <span className="text-sm font-medium text-slate-600">
+            Loading your bookings...
+          </span>
         </div>
-        <div className="flex items-center justify-center rounded-2xl border border-slate-200 bg-white py-20 shadow-sm">
-          <div className="flex flex-col items-center gap-3 text-slate-400">
-            <FiLoader size={28} className="animate-spin" />
-            <p className="text-sm">Loading your bookings…</p>
-          </div>
-        </div>
-      </section>
+      </div>
     )
   }
 

@@ -159,16 +159,13 @@ function ExploreCars() {
 
   if (loading) {
     return (
-      <div className="rounded-3xl border border-slate-200/70 bg-white p-8 text-center shadow-xl">
-        <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">
-          Loading Cars
-        </p>
-        <h1 className="mt-3 text-2xl font-semibold text-slate-900">
-          Fetching the latest car listings
-        </h1>
-        <p className="mt-2 text-sm text-slate-600">
-          Please wait while we load data from the server.
-        </p>
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
+          <span className="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+          <span className="text-sm font-medium text-slate-600">
+            Loading cars...
+          </span>
+        </div>
       </div>
     )
   }

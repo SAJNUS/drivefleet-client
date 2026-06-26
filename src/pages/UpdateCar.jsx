@@ -205,26 +205,12 @@ function UpdateCar() {
   // ── Loading state ──────────────────────────────────────────────────────────
   if (loading) {
     return (
-      <div className="space-y-6">
-        <div>
-          <Link
-            to="/my-added-cars"
-            className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-sm font-medium text-slate-600 shadow-sm transition hover:border-slate-300 hover:text-slate-900"
-          >
-            <FiArrowLeft size={14} />
-            Back to My Added Cars
-          </Link>
-        </div>
-        <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center shadow-sm">
-          <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">
-            Update Car
-          </p>
-          <h1 className="mt-3 text-2xl font-semibold text-slate-900">
-            Loading car details…
-          </h1>
-          <p className="mt-2 text-sm text-slate-500">
-            Please wait while we fetch the listing from the database.
-          </p>
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
+          <span className="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+          <span className="text-sm font-medium text-slate-600">
+            Loading car details...
+          </span>
         </div>
       </div>
     )
