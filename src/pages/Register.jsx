@@ -3,6 +3,8 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { FcGoogle } from 'react-icons/fc'
 import useAuth from '../hooks/useAuth.js'
+import { signOut } from 'firebase/auth'
+import { auth } from '../firebase/firebase.init.js'
 
 const passwordRules = {
   uppercase: /[A-Z]/,
@@ -88,6 +90,9 @@ function Register() {
         displayName: formData.name,
         photoURL: finalPhotoURL,
       })
+      
+      await signOut(auth)
+      
       toast.success('Registration successful')
       navigate('/login', { replace: true, state: location.state })
     } catch (error) {

@@ -21,7 +21,6 @@ function AuthProvider({ children }) {
 
   const registerUser = async (email, password) => {
     const result = await createUserWithEmailAndPassword(auth, email, password)
-    toast.success('Account created successfully')
     return result
   }
 
@@ -39,7 +38,6 @@ function AuthProvider({ children }) {
 
   const updateUserProfile = async (profileData) => {
     const result = await updateProfile(auth.currentUser, profileData)
-    toast.success('Profile updated successfully')
     return result
   }
 
