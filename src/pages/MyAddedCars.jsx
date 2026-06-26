@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { FiAlertTriangle, FiEdit3, FiMapPin, FiTrash2, FiStar, FiGrid, FiCheckCircle, FiClock, FiUsers } from 'react-icons/fi'
+import { FiAlertTriangle, FiEdit3, FiMapPin, FiTrash2, FiStar, FiGrid, FiCheckCircle, FiClock, FiUsers, FiSlash } from 'react-icons/fi'
+import { FaCar } from 'react-icons/fa'
 import { Link, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import useAuth from '../hooks/useAuth.js'
@@ -30,7 +31,7 @@ function MyAddedCars() {
         setError('')
 
         const token = await user.getIdToken()
-        
+
         // Fetch user's cars
         const carsResponse = await fetch(
           `${API_URL}/cars?email=${encodeURIComponent(user.email)}`,
@@ -80,9 +81,9 @@ function MyAddedCars() {
   const userCars = cars
   const activeCars = userCars.filter((car) => car.availabilityStatus === 'Available')
   const inactiveCars = userCars.filter((car) => car.availabilityStatus === 'Unavailable')
-  
+
   const ratedCars = userCars.filter(car => typeof car.rating === 'number' && car.rating > 0);
-  const averageRating = ratedCars.length > 0 
+  const averageRating = ratedCars.length > 0
     ? (ratedCars.reduce((acc, car) => acc + car.rating, 0) / ratedCars.length).toFixed(1)
     : 0;
 
@@ -100,11 +101,11 @@ function MyAddedCars() {
   processedCars.sort((a, b) => {
     if (sortOption === 'price_low') return (a.dailyRentPrice || 0) - (b.dailyRentPrice || 0)
     if (sortOption === 'price_high') return (b.dailyRentPrice || 0) - (a.dailyRentPrice || 0)
-    
+
     // Sort by MongoDB ObjectId timestamp (first 8 hex chars)
     const timeA = a._id ? parseInt(a._id.substring(0, 8), 16) : 0
     const timeB = b._id ? parseInt(b._id.substring(0, 8), 16) : 0
-    
+
     if (sortOption === 'oldest') return timeA - timeB
     return timeB - timeA // newest first
   })
@@ -173,8 +174,8 @@ function MyAddedCars() {
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
-              <FiGrid size={22} />
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
+              <FaCar size={22} />
             </div>
             <div>
               <p className="text-sm text-slate-500">Total Cars</p>
@@ -204,7 +205,7 @@ function MyAddedCars() {
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-50 text-rose-600">
-              <FiClock size={22} />
+              <FiSlash size={22} />
             </div>
             <div>
               <p className="text-sm text-slate-500">Inactive Cars</p>
@@ -237,9 +238,9 @@ function MyAddedCars() {
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <div className="flex w-full items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500 sm:w-[300px] focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 transition">
-              <input 
-                type="text" 
-                placeholder="Search by car name or type..." 
+              <input
+                type="text"
+                placeholder="Search by car name or type..."
                 className="w-full bg-transparent outline-none placeholder:text-slate-400 text-slate-800"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -255,7 +256,7 @@ function MyAddedCars() {
 
           <div className="flex items-center gap-3">
             <label className="text-sm font-medium text-slate-500">Sort by:</label>
-            <select 
+            <select
               className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
               value={sortOption}
               onChange={(e) => setSortOption(e.target.value)}
@@ -293,11 +294,10 @@ function MyAddedCars() {
                     className="h-full w-full object-cover"
                   />
                   <span
-                    className={`absolute left-4 top-4 rounded-full px-3 py-1 text-xs font-semibold shadow-sm ${
-                      car.availabilityStatus === 'Available'
-                        ? 'bg-emerald-100 text-emerald-700'
-                        : 'bg-rose-100 text-rose-600'
-                    }`}
+                    className={`absolute left-4 top-4 rounded-full px-3 py-1 text-xs font-semibold shadow-sm ${car.availabilityStatus === 'Available'
+                      ? 'bg-emerald-100 text-emerald-700'
+                      : 'bg-rose-100 text-rose-600'
+                      }`}
                   >
                     {car.availabilityStatus}
                   </span>
@@ -309,9 +309,8 @@ function MyAddedCars() {
                       {car.carName}
                     </h3>
                     <span
-                      className={`shrink-0 rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide shadow-sm ${
-                        carTagStyles[car.carType] || 'bg-slate-600 text-white'
-                      }`}
+                      className={`shrink-0 rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide shadow-sm ${carTagStyles[car.carType] || 'bg-slate-600 text-white'
+                        }`}
                     >
                       {car.carType}
                     </span>

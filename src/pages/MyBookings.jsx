@@ -4,6 +4,7 @@ import {
   FiCalendar,
   FiLoader,
   FiMapPin,
+  FiFlag,
   FiUsers,
   FiCheck,
   FiCheckCircle,
@@ -13,6 +14,7 @@ import {
   FiStar,
   FiUser,
   FiMessageSquare,
+  FiList
 } from 'react-icons/fi'
 import toast from 'react-hot-toast'
 import useAuth from '../hooks/useAuth.js'
@@ -225,7 +227,7 @@ function MyBookings() {
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
-              <FiUsers size={22} />
+              <FiList size={22} />
             </div>
             <div>
               <p className="text-sm text-slate-500">Total Bookings</p>
@@ -255,7 +257,7 @@ function MyBookings() {
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
-              <FiMapPin size={22} />
+              <FiFlag size={22} />
             </div>
             <div>
               <p className="text-sm text-slate-500">Completed</p>

@@ -24,8 +24,10 @@ import {
   FiDollarSign,
   FiLoader,
   FiCheck,
-  FiInfo
+  FiInfo,
+  FiList
 } from 'react-icons/fi';
+import { FaCar } from 'react-icons/fa';
 
 const API_URL = import.meta.env.VITE_API_URL;
 const API_BASE = `${API_URL}/users/profile`;
@@ -62,7 +64,7 @@ function Profile() {
   useEffect(() => {
     let timer;
     if (showGoogleBanner) {
-      timer = setTimeout(() => setShowGoogleBanner(false), 5000);
+      timer = setTimeout(() => setShowGoogleBanner(false), 3000);
     }
     return () => clearTimeout(timer);
   }, [showGoogleBanner, bannerPulse]);
@@ -119,7 +121,7 @@ function Profile() {
       }
       return;
     }
-    
+
     setEditFormData({
       displayName: user?.displayName || '',
       email: user?.email || '',
@@ -191,6 +193,14 @@ function Profile() {
       default:
         return <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-600"><FiActivity size={18} /></div>;
     }
+  };
+
+  const formatCompactNumber = (number) => {
+    return new Intl.NumberFormat('en-US', {
+      notation: 'compact',
+      compactDisplay: 'short',
+      maximumFractionDigits: 2
+    }).format(number || 0);
   };
 
   const formatDate = (isoString) => {
@@ -353,17 +363,17 @@ function Profile() {
           <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
             <div className="flex items-center justify-between">
               <p className="text-sm font-medium text-slate-500">Total Cars Added</p>
-              <div className="rounded-full bg-blue-50 p-2 text-blue-600"><FiBox size={20} /></div>
+              <div className="rounded-full bg-blue-50 p-2 text-blue-600"><FaCar size={20} /></div>
             </div>
-            <p className="mt-4 text-3xl font-bold text-slate-900">{stats.totalCars}</p>
+            <p className="mt-4 text-3xl font-bold text-blue-600">{stats.totalCars}</p>
           </div>
 
           <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
             <div className="flex items-center justify-between">
               <p className="text-sm font-medium text-slate-500">Total Bookings</p>
-              <div className="rounded-full bg-indigo-50 p-2 text-indigo-600"><FiCalendar size={20} /></div>
+              <div className="rounded-full bg-indigo-50 p-2 text-indigo-600"><FiList size={20} /></div>
             </div>
-            <p className="mt-4 text-3xl font-bold text-slate-900">{stats.totalBookings}</p>
+            <p className="mt-4 text-3xl font-bold text-indigo-600">{stats.totalBookings}</p>
           </div>
 
           <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
@@ -371,10 +381,18 @@ function Profile() {
               <p className="text-sm font-medium text-slate-500">Total Earnings</p>
               <div className="rounded-full bg-emerald-50 p-2 text-emerald-600"><FiDollarSign size={20} /></div>
             </div>
-            <p className="mt-4 text-3xl font-bold text-emerald-600">
-              <span className="text-xl font-normal mr-1">৳</span>
-              {stats.totalEarnings.toLocaleString()}
-            </p>
+            <div className="mt-4 flex items-baseline">
+              <span className="text-xl font-normal text-emerald-600 mr-1 cursor-default">৳</span>
+              <div className="relative group w-max">
+                <p className="text-3xl font-bold text-emerald-600 truncate cursor-default">
+                  {formatCompactNumber(stats.totalEarnings)}
+                </p>
+                <div className="absolute bottom-full left-0 mb-2 hidden group-hover:block whitespace-nowrap rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white shadow-lg z-10">
+                  ৳ {stats.totalEarnings.toLocaleString()}
+                  <div className="absolute left-4 top-full -mt-1 -translate-x-1/2 border-4 border-transparent border-t-slate-900"></div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
@@ -382,10 +400,18 @@ function Profile() {
               <p className="text-sm font-medium text-slate-500">Total Spent</p>
               <div className="rounded-full bg-rose-50 p-2 text-rose-600"><FiCreditCard size={20} /></div>
             </div>
-            <p className="mt-4 text-3xl font-bold text-rose-600">
-              <span className="text-xl font-normal mr-1">৳</span>
-              {stats.totalSpent.toLocaleString()}
-            </p>
+            <div className="mt-4 flex items-baseline">
+              <span className="text-xl font-normal text-rose-600 mr-1 cursor-default">৳</span>
+              <div className="relative group w-max">
+                <p className="text-3xl font-bold text-rose-600 truncate cursor-default">
+                  {formatCompactNumber(stats.totalSpent)}
+                </p>
+                <div className="absolute bottom-full left-0 mb-2 hidden group-hover:block whitespace-nowrap rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white shadow-lg z-10">
+                  ৳ {stats.totalSpent.toLocaleString()}
+                  <div className="absolute left-4 top-full -mt-1 -translate-x-1/2 border-4 border-transparent border-t-slate-900"></div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -421,7 +447,7 @@ function Profile() {
 
               {activities.length > 5 && (
                 <div className="pt-4 border-t border-slate-100 flex justify-center">
-                  <button 
+                  <button
                     onClick={() => setShowAllActivity(true)}
                     className="text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors"
                   >
@@ -450,14 +476,14 @@ function Profile() {
           <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[80vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 bg-slate-50/50 shrink-0">
               <h3 className="text-xl font-bold text-slate-900">All Activity History</h3>
-              <button 
+              <button
                 onClick={() => setShowAllActivity(false)}
                 className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
               >
                 <FiX size={24} />
               </button>
             </div>
-            
+
             <div className="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar">
               <div className="space-y-6">
                 {activities.map((activity, index) => (
