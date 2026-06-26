@@ -81,9 +81,10 @@ function MyAddedCars() {
   const activeCars = userCars.filter((car) => car.availabilityStatus === 'Available')
   const inactiveCars = userCars.filter((car) => car.availabilityStatus === 'Unavailable')
   
-  const totalEarnings = ownerBookings
-    .filter((booking) => booking.bookingStatus === 'Completed')
-    .reduce((sum, booking) => sum + (booking.totalCost ?? 0), 0)
+  const ratedCars = userCars.filter(car => typeof car.rating === 'number' && car.rating > 0);
+  const averageRating = ratedCars.length > 0 
+    ? (ratedCars.reduce((acc, car) => acc + car.rating, 0) / ratedCars.length).toFixed(1)
+    : 0;
 
   // Filter and Sort
   let processedCars = [...userCars]
@@ -217,16 +218,16 @@ function MyAddedCars() {
 
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 text-2xl text-amber-600">
-              ৳
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 text-amber-600">
+              <FiStar size={22} />
             </div>
             <div>
-              <p className="text-sm text-slate-500">Total Earnings</p>
+              <p className="text-sm text-slate-500">Average Rating</p>
               <div className="flex items-baseline gap-1 text-2xl text-slate-900">
-                <span className="font-normal">BDT</span>
-                <span className="font-bold">{totalEarnings.toLocaleString()}</span>
+                <span className="font-bold">{averageRating}</span>
+                <span className="text-sm font-normal text-slate-500">/ 5</span>
               </div>
-              <p className="text-xs text-slate-500">From your cars</p>
+              <p className="text-xs text-slate-500">Across all cars</p>
             </div>
           </div>
         </div>

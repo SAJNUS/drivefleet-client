@@ -9,6 +9,7 @@ import {
   FiCheckCircle,
   FiCreditCard,
   FiX,
+  FiXCircle,
   FiStar,
   FiUser,
   FiMessageSquare,
@@ -111,16 +112,8 @@ function MyBookings() {
     () => bookings.filter((b) => b.bookingStatus === 'Cancelled').length,
     [bookings],
   )
-  const totalSpent = useMemo(
-    () =>
-      bookings
-        .filter((b) => b.bookingStatus !== 'Cancelled')
-        .reduce((sum, b) => sum + (b.totalCost ?? 0), 0),
-    [bookings],
-  )
-
   const totalBookingsCount = useMemo(
-    () => bookings.filter((b) => b.bookingStatus !== 'Cancelled').length,
+    () => bookings.length,
     [bookings]
   )
 
@@ -179,7 +172,9 @@ function MyBookings() {
       }
 
       setBookings((current) =>
-        current.filter((b) => b._id !== cancelTarget._id),
+        current.map((b) =>
+          b._id === cancelTarget._id ? { ...b, bookingStatus: 'Cancelled' } : b
+        )
       )
       toast.success(`${cancelTarget.carName} booking cancelled.`)
       setCancelTarget(null)
@@ -274,16 +269,15 @@ function MyBookings() {
 
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 text-2xl text-amber-600">
-              ৳
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-50 text-rose-600">
+              <FiXCircle size={22} />
             </div>
             <div>
-              <p className="text-sm text-slate-500">Total Spent</p>
-              <div className="flex items-baseline gap-1 text-2xl text-slate-900">
-                <span className="font-normal">BDT</span>
-                <span className="font-bold">{totalSpent.toLocaleString()}</span>
-              </div>
-              <p className="text-xs text-slate-400">All time</p>
+              <p className="text-sm text-slate-500">Cancelled Cars</p>
+              <p className="text-2xl font-semibold text-slate-900">
+                {cancelledCount}
+              </p>
+              <p className="text-xs text-slate-400">Cancelled trips</p>
             </div>
           </div>
         </div>
