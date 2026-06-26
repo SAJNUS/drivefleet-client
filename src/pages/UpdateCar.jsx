@@ -95,7 +95,7 @@ function UpdateCar() {
           modelYear: car.modelYear ? String(car.modelYear) : '',
           transmission: car.transmission ?? '',
           fuelType: car.fuelType ?? '',
-          mileage: car.mileage ?? '',
+          mileage: car.mileage ? car.mileage.replace(' km/l', '') : '',
           description: car.description ?? '',
           availabilityStatus: car.availabilityStatus ?? 'Available',
         })
@@ -171,7 +171,7 @@ function UpdateCar() {
       ...(formData.modelYear && { modelYear: Number(formData.modelYear) }),
       ...(formData.transmission && { transmission: formData.transmission }),
       ...(formData.fuelType && { fuelType: formData.fuelType }),
-      ...(formData.mileage && { mileage: formData.mileage.trim() }),
+      ...(formData.mileage && { mileage: `${formData.mileage.trim()} km/l` }),
       description: formData.description.trim(),
       availabilityStatus: formData.availabilityStatus,
     }
@@ -315,11 +315,10 @@ function UpdateCar() {
             {/* Badges */}
             <div className="flex flex-wrap gap-2">
               <span
-                className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${
-                  isAvailable
-                    ? 'bg-emerald-50 text-emerald-700'
-                    : 'bg-rose-50 text-rose-600'
-                }`}
+                className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${isAvailable
+                  ? 'bg-emerald-50 text-emerald-700'
+                  : 'bg-rose-50 text-rose-600'
+                  }`}
               >
                 {formData.availabilityStatus || '—'}
               </span>
@@ -476,32 +475,23 @@ function UpdateCar() {
               {/* Mileage */}
               <div>
                 <label className={labelCls} htmlFor="mileage">Mileage</label>
-                <input
-                  id="mileage"
-                  name="mileage"
-                  type="text"
-                  value={formData.mileage}
-                  onChange={handleChange}
-                  className={inputCls}
-                  placeholder="e.g. 12.5 km/l"
-                />
-              </div>
-
-              {/* Image URL */}
-              <div>
-                <label className={labelCls} htmlFor="imageUrl">Image URL</label>
-                <input
-                  id="imageUrl"
-                  name="imageUrl"
-                  type="url"
-                  value={formData.imageUrl}
-                  onChange={handleChange}
-                  className={inputCls}
-                  placeholder="https://example.com/car-image.jpg"
-                />
-                <p className="mt-1.5 text-xs text-blue-500">
-                  Enter a direct image URL of your car.
-                </p>
+                <div className="relative">
+                  <input
+                    id="mileage"
+                    name="mileage"
+                    type="number"
+                    step="any"
+                    min="0"
+                    value={formData.mileage}
+                    onChange={handleChange}
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 pr-16 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                    placeholder="e.g. 12.5"
+                    required
+                  />
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
+                    <span className="text-sm font-medium text-slate-500">km/l</span>
+                  </div>
+                </div>
               </div>
 
               {/* Pickup Location */}
@@ -519,6 +509,23 @@ function UpdateCar() {
                     placeholder="e.g. Savar, Dhaka"
                   />
                 </div>
+              </div>
+
+              {/* Image URL */}
+              <div>
+                <label className={labelCls} htmlFor="imageUrl">Image URL</label>
+                <input
+                  id="imageUrl"
+                  name="imageUrl"
+                  type="url"
+                  value={formData.imageUrl}
+                  onChange={handleChange}
+                  className={inputCls}
+                  placeholder="https://example.com/car-image.jpg"
+                />
+                <p className="mt-1.5 text-xs text-blue-500">
+                  Enter a direct image URL of your car.
+                </p>
               </div>
 
 

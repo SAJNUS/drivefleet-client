@@ -92,7 +92,7 @@ function AddCar() {
       modelYear: Number(formData.modelYear),
       transmission: formData.transmission,
       fuelType: formData.fuelType,
-      mileage: formData.mileage.trim(),
+      mileage: `${formData.mileage.trim()} km/l`,
       description: formData.description.trim(),
       availabilityStatus: formData.availabilityStatus,
       ownerEmail: user?.email ?? '',
@@ -274,32 +274,23 @@ function AddCar() {
             <label className="text-sm font-medium text-slate-700" htmlFor="mileage">
               Mileage
             </label>
-            <input
-              id="mileage"
-              name="mileage"
-              type="text"
-              value={formData.mileage}
-              onChange={handleChange}
-              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-blue-500"
-              placeholder="e.g. 12.5 km/l"
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-700" htmlFor="imageUrl">
-              Image URL
-            </label>
-            <input
-              id="imageUrl"
-              name="imageUrl"
-              type="url"
-              value={formData.imageUrl}
-              onChange={handleChange}
-              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-blue-500"
-              placeholder="Paste image URL"
-              required
-            />
+            <div className="relative">
+              <input
+                id="mileage"
+                name="mileage"
+                type="number"
+                step="any"
+                min="0"
+                value={formData.mileage}
+                onChange={handleChange}
+                className="w-full rounded-xl border border-slate-200 px-4 py-3 pr-16 text-sm outline-none transition focus:border-blue-500"
+                placeholder="e.g. 12.5"
+                required
+              />
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
+                <span className="text-sm font-medium text-slate-500">km/l</span>
+              </div>
+            </div>
           </div>
 
           <div className="space-y-2">
@@ -317,6 +308,22 @@ function AddCar() {
               onChange={handleChange}
               className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-blue-500"
               placeholder="Enter pickup location"
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-slate-700" htmlFor="imageUrl">
+              Image URL
+            </label>
+            <input
+              id="imageUrl"
+              name="imageUrl"
+              type="url"
+              value={formData.imageUrl}
+              onChange={handleChange}
+              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-blue-500"
+              placeholder="Paste image URL"
               required
             />
           </div>

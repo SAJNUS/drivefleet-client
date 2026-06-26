@@ -145,7 +145,6 @@ function Navbar() {
           <Link 
             to="/" 
             className="flex flex-col"
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
             <p className="text-xl font-semibold text-slate-900">
               Drive<span className="text-blue-600">Fleet</span>

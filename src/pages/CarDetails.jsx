@@ -72,7 +72,6 @@ function CarDetails() {
     : 0
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' })
     const controller = new AbortController()
 
     async function loadCar() {
