@@ -142,7 +142,11 @@ function Navbar() {
     <header className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/80 shadow-sm backdrop-blur">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
         <div className="flex flex-1 items-center justify-start">
-          <Link to="/" className="flex flex-col">
+          <Link 
+            to="/" 
+            className="flex flex-col"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          >
             <p className="text-xl font-semibold text-slate-900">
               Drive<span className="text-blue-600">Fleet</span>
             </p>
