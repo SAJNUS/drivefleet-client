@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { FiAlertTriangle, FiEdit3, FiMapPin, FiTrash2, FiStar, FiGrid, FiCheckCircle, FiClock, FiUsers, FiSlash } from 'react-icons/fi'
+import { FiAlertTriangle, FiEdit3, FiMapPin, FiTrash2, FiStar, FiGrid, FiCheckCircle, FiClock, FiUsers, FiSlash, FiSearch } from 'react-icons/fi'
 import { FaCar } from 'react-icons/fa'
 import { Link, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
@@ -234,6 +234,7 @@ function MyAddedCars() {
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <div className="flex w-full items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500 sm:w-[300px] focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 transition">
+              <FiSearch size={16} className="text-slate-400 shrink-0" />
               <input
                 type="text"
                 placeholder="Search by car name or type..."
@@ -242,12 +243,6 @@ function MyAddedCars() {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <button
-              type="button"
-              className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-600 transition hover:border-blue-200 hover:text-blue-700"
-            >
-              Filter
-            </button>
           </div>
 
           <div className="flex items-center gap-3">

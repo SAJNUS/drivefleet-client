@@ -22,9 +22,8 @@ function CarCard({ car, variant = 'explore' }) {
       </Link>
       <div className={variant === 'home' ? 'relative bg-gradient-to-b from-slate-50 to-white' : 'relative overflow-hidden rounded-2xl bg-slate-50'}>
         <span
-          className={`absolute left-3 top-3 rounded-md px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide shadow opacity-90 ${
-            carTagStyles[car.type] || 'bg-slate-600 text-white'
-          }`}
+          className={`absolute left-3 top-3 rounded-md px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide shadow opacity-90 ${carTagStyles[car.type] || 'bg-slate-600 text-white'
+            }`}
         >
           {car.type}
         </span>

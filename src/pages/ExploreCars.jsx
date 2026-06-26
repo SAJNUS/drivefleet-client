@@ -1,15 +1,16 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
-  FiChevronDown,
+
   FiChevronLeft,
   FiChevronRight,
-  FiGrid,
   FiHeart,
-  FiList,
   FiMapPin,
   FiSearch,
+  FiStar,
+  FiUsers,
 } from 'react-icons/fi'
-import CarCard from '../components/CarCard.jsx'
+import CarCard, { carTagStyles } from '../components/CarCard.jsx'
+import { Link } from 'react-router-dom'
 
 const API_URL = import.meta.env.VITE_API_URL;
 const apiUrl = `${API_URL}/cars`
@@ -18,13 +19,13 @@ const placeholderImageUrl = 'https://placehold.co/600x400?text=Car'
 const bannerImage = '/banner-section-picture.png'
 
 function ExploreCars() {
-  const itemsPerPage = 6
+  const itemsPerPage = 9
   const [cars, setCars] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedTypes, setSelectedTypes] = useState(['All Types'])
-  const [sortOrder, setSortOrder] = useState('low-to-high')
+  const [sortOrder, setSortOrder] = useState('newest')
   const [currentPage, setCurrentPage] = useState(1)
 
   useEffect(() => {
@@ -96,8 +97,17 @@ function ExploreCars() {
       if (sortOrder === 'high-to-low') {
         return secondCar.dailyRentPrice - firstCar.dailyRentPrice
       }
+      if (sortOrder === 'low-to-high') {
+        return firstCar.dailyRentPrice - secondCar.dailyRentPrice
+      }
+      if (sortOrder === 'newest') {
+        return secondCar.id.localeCompare(firstCar.id)
+      }
+      if (sortOrder === 'oldest') {
+        return firstCar.id.localeCompare(secondCar.id)
+      }
 
-      return firstCar.dailyRentPrice - secondCar.dailyRentPrice
+      return 0
     })
 
     return result
@@ -140,7 +150,7 @@ function ExploreCars() {
   const clearFilters = () => {
     setSearchTerm('')
     setSelectedTypes(['All Types'])
-    setSortOrder('low-to-high')
+    setSortOrder('newest')
     setCurrentPage(1)
   }
 
@@ -267,31 +277,23 @@ function ExploreCars() {
                   onChange={(event) => setSortOrder(event.target.value)}
                   className="bg-transparent text-xs font-medium text-slate-700 outline-none"
                 >
+                  <option value="newest">Newest First</option>
+                  <option value="oldest">Oldest First</option>
                   <option value="low-to-high">Price: Low to High</option>
                   <option value="high-to-low">Price: High to Low</option>
                 </select>
-                <FiChevronDown size={14} />
               </label>
-              <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white p-1">
-                <button className="rounded-md bg-blue-50 p-2 text-blue-600">
-                  <FiGrid size={14} />
-                </button>
-                <button className="rounded-md p-2 text-slate-500">
-                  <FiList size={14} />
-                </button>
-              </div>
             </div>
           </div>
 
-          <div
-            className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3"
-          >
+          <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
             {paginatedCars.map((car) => (
               <div key={car.id}>
                 <CarCard car={car} variant="explore" />
               </div>
             ))}
           </div>
+
 
           {filteredCars.length === 0 && (
             <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-600">
@@ -313,11 +315,10 @@ function ExploreCars() {
                 key={page}
                 type="button"
                 onClick={() => setCurrentPage(page)}
-                className={`rounded-lg px-3 py-2 text-xs font-semibold ${
-                  page === currentPage
-                    ? 'bg-blue-600 text-white'
-                    : 'border border-slate-200 bg-white text-slate-600'
-                }`}
+                className={`rounded-lg px-3 py-2 text-xs font-semibold ${page === currentPage
+                  ? 'bg-blue-600 text-white'
+                  : 'border border-slate-200 bg-white text-slate-600'
+                  }`}
               >
                 {page}
               </button>

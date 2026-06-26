@@ -93,7 +93,7 @@ function Home() {
         if (response.ok) {
           const result = await response.json()
           const data = Array.isArray(result.data) ? result.data : []
-          
+
           const transformed = data.map((car) => ({
             id: car._id,
             name: car.carName ?? '',
@@ -105,7 +105,7 @@ function Home() {
             rating: car.rating ?? 0,
             status: car.availabilityStatus ?? 'Available',
           }))
-          
+
           setFeaturedCars(transformed.reverse().slice(0, 6))
         }
       } catch (error) {
